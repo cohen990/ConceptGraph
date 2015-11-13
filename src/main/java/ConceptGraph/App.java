@@ -30,11 +30,11 @@ public class App {
 
         try {
             while (!Links.isEmpty()) {
-                if(QueriedUris.size() > 20){
+                if(QueriedUris.size() > 2000){
                     return;
                 }
                 Uri curr = Links.remove();
-                System.out.println("quering " + curr.toString() + System.getProperty("line.separator"));
+                System.out.println("querying " + curr.toString() + System.getProperty("line.separator"));
                 try {
                     Document doc = Jsoup.connect(curr.toString()).get();
 
