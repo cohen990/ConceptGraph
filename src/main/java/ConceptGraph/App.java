@@ -1,7 +1,6 @@
 package ConceptGraph;
 
 import com.sun.jndi.toolkit.url.Uri;
-import com.sun.org.apache.xml.internal.resolver.helpers.Debug;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -10,6 +9,9 @@ import org.jsoup.select.Elements;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.DateFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -24,32 +26,45 @@ public class App {
     private static HashMap<String, Node> Nodes = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
+
+        FileWriter nodesFile = new FileWriter("graph.grp");
+
         Uri firstUrl = new Uri("https://en.wikipedia.org/wiki/Tree");
 
         Links.add(firstUrl);
 
         try {
             while (!Links.isEmpty()) {
-                if(QueriedUris.size() > 2000){
-                    return;
-                }
+//                if (QueriedUris.size() > 2000) {
+//                    return;
+//                }
                 Uri curr = Links.remove();
-                System.out.println("querying " + curr.toString() + System.getProperty("line.separator"));
+                System.out.println("querying " + curr.toString());
                 try {
+                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    Date date = new Date();
+                    System.out.println(dateFormat.format(date)); //2014/08/06 15:59:48
+
+                    long startTime = System.currentTimeMillis();
+
                     Document doc = Jsoup.connect(curr.toString()).get();
+                    long fetchTime = System.currentTimeMillis();
+                    System.out.println("Document fetched in " + (fetchTime - startTime)/1000.0 + " seconds");
 
                     String title = doc.getElementById("firstHeading").text();
                     Node node;
                     if (!Nodes.containsKey(title)) {
-                        node = new Node(title);
+                        node = new Node(title, curr);
                     } else {
                         node = Nodes.get(title);
+                        node.setUri(curr);
                     }
-                    node.hasWikiPage = true;
+
                     Nodes.put(title, node);
 
                     QueriedUris.add(curr);
                     System.out.println(QueriedUris.size() + " queried so far...");
+                    System.out.println("Mem usage: " + NumberFormat.getNumberInstance(Locale.US).format(    (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024) + "KB");
                     String mainBody = doc.getElementById("mw-content-text").text();
                     // currently case sensitive
                     String[] words = mainBody.split("\\W");
@@ -64,20 +79,31 @@ public class App {
                     addWordsToHashSet(words);
                     getUrisFromDocument(doc);
                     getNodesFromWords(words, node);
+                    writeNode(node, nodesFile);
+                    long endTime = System.currentTimeMillis();
+
+                    System.out.println("Document processed in " + (endTime - fetchTime)/1000.0 + " seconds" + System.getProperty("line.separator"));
                 } catch (IOException e) {
                     e.printStackTrace();
+                    System.out.println();
                 }
             }
         } finally {
-            WriteOutput();
+            WriteOutput(nodesFile);
         }
+    }
+
+    private static void writeNode(Node node, FileWriter nodes) throws IOException {
+        nodes.write(node.toString() + System.getProperty("line.separator") + System.getProperty("line.separator"));
+        node.written = true;
+        node.dropConnections();
     }
 
     private static void getNodesFromWords(String[] words, Node root) {
         for (String word : words) {
             Node node = Nodes.get(word);
 
-            if(node == null){
+            if (node == null) {
                 node = new Node(word);
                 Nodes.put(word, node);
             }
@@ -103,13 +129,13 @@ public class App {
 
         for (Element link : links) {
             String href = link.attr("href");
-            if (href.startsWith("/")) {
+            if (href.startsWith("/") && !href.contains("File:")) {
                 if (href.startsWith("//")) {
                     href = "http:" + href;
                 } else {
                     href = "https://www.wikipedia.org" + href;
                 }
-                if(href.contains("wikipedia.org")) {
+                if (href.contains("wikipedia.org")) {
                     try {
                         Uri uri = new Uri(href);
                         if (SeenLinks.add(uri)) {
@@ -134,7 +160,7 @@ public class App {
         }
     }
 
-    private static void WriteOutput() throws IOException {
+    private static void WriteOutput(FileWriter nodes) throws IOException {
         FileWriter freq = new FileWriter("freq_output.txt");
 
         for (String key : Frequency.keySet()) {
@@ -154,10 +180,10 @@ public class App {
         queried.close();
 
         QueriedUris.clear();
-
-        FileWriter nodes = new FileWriter("graph.txt");
         for (Node node : Nodes.values()) {
-            nodes.write(node.toString() + System.getProperty("line.separator") + System.getProperty("line.separator"));
+            if (node.written == false) {
+                nodes.write(node.toString() + System.getProperty("line.separator") + System.getProperty("line.separator"));
+            }
         }
 
         nodes.close();
