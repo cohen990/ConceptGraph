@@ -29,6 +29,9 @@ public class Analyser {
             for(int i = 0; i < root.connectedConcepts.size(); i++) {
                 double val = (double) ((int) vals[i]);
                 String name = ((Node) keys[i]).name;
+                if(name.equals("wood")){
+                    val = val;
+                }
                 Integer frequency = frequencies.get(name);
                 double relativeStrength = Math.pow(1- (frequency / (double) max), 2);
                 double weightedStrength = val * relativeStrength;

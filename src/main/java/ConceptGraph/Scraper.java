@@ -29,11 +29,13 @@ public class Scraper {
         Uri firstUrl = new Uri("https://en.wikipedia.org/wiki/Tree");
 
         Links.add(firstUrl);
+        boolean shouldBreak= false;
 
         while (!Links.isEmpty()) {
-                if (QueriedUris.size() > 100) {
-                    break;
-                }
+//                if (QueriedUris.size() > 100) {
+            if(shouldBreak){
+                break;
+            }
             Uri curr = Links.remove();
             System.out.println("querying " + curr.toString());
             FileWriter writer = null;
@@ -49,6 +51,10 @@ public class Scraper {
                 System.out.println("Document fetched in " + (fetchTime - startTime) / 1000.0 + " seconds");
 
                 String title = doc.getElementById("firstHeading").text();
+
+                if(title.toLowerCase().equals("wood")){
+                    title = title;
+                }
                 int hash = Hasher.simpleHash(title);
 
                 if (SeenHashCodes.contains(hash)) {
@@ -151,7 +157,10 @@ public class Scraper {
                 }
                 if (href.contains("wikipedia.org")) {
                     try {
-                        Uri uri = new Uri(href);
+                        if(href.equals("https://www.wikipedia.org/wiki/Wood")){
+                            href = href;
+                        }
+                        Uri uri = new Uri(href)
                         if (SeenLinks.add(uri)) {
                             Links.add(uri);
                         }
