@@ -57,7 +57,7 @@ public class SizedMaxArrayTest extends TestCase {
         arr.insert(10, 0);
         arr.insert(11, 15);
 
-        assertEquals(11, arr.getKeys()[0]);
+        assertEquals(11.0, arr.getKeys()[0]);
     }
 
     public void test_arrSize1_GivenSecondNumberLarger_SetsValToValOFLarger() throws InvalidArgumentException {
@@ -82,7 +82,7 @@ public class SizedMaxArrayTest extends TestCase {
         arr.insert(10, 0);
         assertFalse(arr.insert(9, 15));
 
-        assertEquals(10, arr.getKeys()[0]);
+        assertEquals(10.0, arr.getKeys()[0]);
     }
 
     public void test_arrSize1_GivenSecondNumberSmaller_KeepsValuesAtValOfLarger() throws InvalidArgumentException {
@@ -104,17 +104,17 @@ public class SizedMaxArrayTest extends TestCase {
         arr.insert(12, 19);
         arr.insert(9, 1);
 
-        int[] keys = arr.getKeys();
+        double[] keys = arr.getKeys();
         Object[] vals= arr.getValues();
-        assertEquals(15, keys[0]);
+        assertEquals(15.0, keys[0]);
         assertEquals(1, vals[0]);
-        assertEquals(12, keys[1]);
+        assertEquals(12.0, keys[1]);
         assertEquals(19, vals[1]);
-        assertEquals(10, keys[2]);
+        assertEquals(10.0, keys[2]);
         assertEquals(12, vals[2]);
-        assertEquals(9, keys[3]);
+        assertEquals(9.0, keys[3]);
         assertEquals(1, vals[3]);
-        assertEquals(6, keys[4]);
+        assertEquals(6.0, keys[4]);
         assertEquals(2, vals[4]);
     }
 }

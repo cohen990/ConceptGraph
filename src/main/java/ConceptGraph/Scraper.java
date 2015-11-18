@@ -31,9 +31,9 @@ public class Scraper {
         Links.add(firstUrl);
 
         while (!Links.isEmpty()) {
-//                if (QueriedUris.size() > 2000) {
-//                    return;
-//                }
+                if (QueriedUris.size() > 100) {
+                    break;
+                }
             Uri curr = Links.remove();
             System.out.println("querying " + curr.toString());
             FileWriter writer = null;
@@ -73,6 +73,8 @@ public class Scraper {
                 QueriedUris.add(curr);
                 System.out.println(QueriedUris.size() + " queried so far...");
                 System.out.println("Mem usage: " + NumberFormat.getNumberInstance(Locale.US).format((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024) + "KB");
+                doc.getElementsByClass("reflist").remove();
+                doc.getElementsByClass("refbegin").remove();
                 String mainBody = doc.getElementById("mw-content-text").text();
                 // currently case sensitive
                 String[] words = mainBody.split("\\W");
@@ -84,7 +86,6 @@ public class Scraper {
 
                 words = Arrays.copyOf(filtered, filtered.length, String[].class);
 
-                addWordsToHashSet(words);
                 getUrisFromDocument(doc);
                 getNodesFromWords(words, node);
                 writeNode(node, writer);
@@ -100,6 +101,8 @@ public class Scraper {
                 }
             }
         }
+
+        WriteOutput();
     }
 
     private void writeNode(Node node, FileWriter nodes) throws IOException {
@@ -120,6 +123,8 @@ public class Scraper {
             int strength = 1;
             if (root.connectedConcepts.containsKey(node)) {
                 strength = root.connectedConcepts.get(node) + 1;
+            } else {
+                addWordToHashSet(word);
             }
 
             root.connectedConcepts.put(node, strength);
@@ -158,18 +163,16 @@ public class Scraper {
         }
     }
 
-    private void addWordsToHashSet(String[] words) {
-        for (String word : words) {
-            if (!word.isEmpty()) {
-                if (!Frequency.containsKey(word)) {
-                    Frequency.put(word, 0);
-                }
-                Frequency.merge(word, 1, (oldValue, one) -> oldValue + one);
+    private void addWordToHashSet(String word) {
+        if (!word.isEmpty()) {
+            if (!Frequency.containsKey(word)) {
+                Frequency.put(word, 0);
             }
+            Frequency.merge(word, 1, (oldValue, one) -> oldValue + one);
         }
     }
 
-    private void WriteOutput(FileWriter nodes) throws IOException {
+    private void WriteOutput() throws IOException {
         FileWriter freq = new FileWriter("freq_output.txt");
 
         for (String key : Frequency.keySet()) {
@@ -189,15 +192,6 @@ public class Scraper {
         queried.close();
 
         QueriedUris.clear();
-        for (Node node : Nodes.values()) {
-            if (node.written == false) {
-                nodes.write(node.toString() + System.getProperty("line.separator") + System.getProperty("line.separator"));
-            }
-        }
-
-        nodes.close();
-
-        Nodes.clear();
     }
 }
 
