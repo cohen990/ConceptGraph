@@ -24,72 +24,83 @@ public class App {
     private static HashMap<String, Integer> Frequency = new HashMap<>();
     private static List<Uri> QueriedUris = new ArrayList<>();
     private static HashMap<String, Node> Nodes = new HashMap<>();
+    private static HashSet<Integer> SeenHashCodes = new HashSet<>();
 
     public static void main(String[] args) throws IOException {
-
-        FileWriter nodesFile = new FileWriter("graph.grp");
 
         Uri firstUrl = new Uri("https://en.wikipedia.org/wiki/Tree");
 
         Links.add(firstUrl);
 
-        try {
-            while (!Links.isEmpty()) {
+        while (!Links.isEmpty()) {
 //                if (QueriedUris.size() > 2000) {
 //                    return;
 //                }
-                Uri curr = Links.remove();
-                System.out.println("querying " + curr.toString());
-                try {
-                    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                    Date date = new Date();
-                    System.out.println(dateFormat.format(date)); //2014/08/06 15:59:48
+            Uri curr = Links.remove();
+            System.out.println("querying " + curr.toString());
+            FileWriter writer = null;
+            try {
+                DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                Date date = new Date();
+                System.out.println(dateFormat.format(date)); //2014/08/06 15:59:48
 
-                    long startTime = System.currentTimeMillis();
+                long startTime = System.currentTimeMillis();
 
-                    Document doc = Jsoup.connect(curr.toString()).get();
-                    long fetchTime = System.currentTimeMillis();
-                    System.out.println("Document fetched in " + (fetchTime - startTime)/1000.0 + " seconds");
+                Document doc = Jsoup.connect(curr.toString()).get();
+                long fetchTime = System.currentTimeMillis();
+                System.out.println("Document fetched in " + (fetchTime - startTime) / 1000.0 + " seconds");
 
-                    String title = doc.getElementById("firstHeading").text();
-                    Node node;
-                    if (!Nodes.containsKey(title)) {
-                        node = new Node(title, curr);
-                    } else {
-                        node = Nodes.get(title);
-                        node.setUri(curr);
-                    }
+                String title = doc.getElementById("firstHeading").text();
+                int hash = title.hashCode();
 
-                    Nodes.put(title, node);
+                if (SeenHashCodes.contains(hash)) {
+                    writer = new FileWriter("graph/" + title.hashCode() + ".grp", true);
+                } else {
+                    SeenHashCodes.add(hash);
+                    writer = new FileWriter("graph/" + title.hashCode() + ".grp", false);
+                }
 
-                    QueriedUris.add(curr);
-                    System.out.println(QueriedUris.size() + " queried so far...");
-                    System.out.println("Mem usage: " + NumberFormat.getNumberInstance(Locale.US).format(    (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory())/1024) + "KB");
-                    String mainBody = doc.getElementById("mw-content-text").text();
-                    // currently case sensitive
-                    String[] words = mainBody.split("\\W");
+                System.out.println("Writing to graph/" + hash + ".grp");
 
-                    Object[] filtered = Stream.of(words)
-                            .map((word) -> word.toLowerCase().trim())
-                            .filter((word) -> !word.isEmpty())
-                            .toArray();
+                Node node;
+                if (!Nodes.containsKey(title)) {
+                    node = new Node(title, curr);
+                } else {
+                    node = Nodes.get(title);
+                    node.setUri(curr);
+                }
 
-                    words = Arrays.copyOf(filtered, filtered.length, String[].class);
+                Nodes.put(title, node);
 
-                    addWordsToHashSet(words);
-                    getUrisFromDocument(doc);
-                    getNodesFromWords(words, node);
-                    writeNode(node, nodesFile);
-                    long endTime = System.currentTimeMillis();
+                QueriedUris.add(curr);
+                System.out.println(QueriedUris.size() + " queried so far...");
+                System.out.println("Mem usage: " + NumberFormat.getNumberInstance(Locale.US).format((Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024) + "KB");
+                String mainBody = doc.getElementById("mw-content-text").text();
+                // currently case sensitive
+                String[] words = mainBody.split("\\W");
 
-                    System.out.println("Document processed in " + (endTime - fetchTime)/1000.0 + " seconds" + System.getProperty("line.separator"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    System.out.println();
+                Object[] filtered = Stream.of(words)
+                        .map((word) -> word.toLowerCase().trim())
+                        .filter((word) -> !word.isEmpty())
+                        .toArray();
+
+                words = Arrays.copyOf(filtered, filtered.length, String[].class);
+
+                addWordsToHashSet(words);
+                getUrisFromDocument(doc);
+                getNodesFromWords(words, node);
+                writeNode(node, writer);
+                long endTime = System.currentTimeMillis();
+
+                System.out.println("Document processed in " + (endTime - fetchTime) / 1000.0 + " seconds" + System.getProperty("line.separator"));
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println();
+            } finally {
+                if (writer != null) {
+                    writer.close();
                 }
             }
-        } finally {
-            WriteOutput(nodesFile);
         }
     }
 
