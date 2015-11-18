@@ -13,7 +13,7 @@ public class Node{
 
     public Node(String name){
         hasWikiPage = false;
-        this.name = name;
+        this.name = name.toLowerCase();
         connectedConcepts = new HashMap<>();
         written = false;
     }
@@ -51,5 +51,9 @@ public class Node{
 
     public void dropConnections() {
         connectedConcepts = new HashMap<>();
+    }
+
+    public void addConnection(Node node, int weight){
+        connectedConcepts.putIfAbsent(node, weight);
     }
 }
