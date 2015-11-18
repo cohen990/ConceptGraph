@@ -2,8 +2,10 @@ package ConceptGraph;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
 
+import java.io.Console;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,21 +14,30 @@ public class Analyser {
     private StringHasher Hasher = new StringHasher();
 
     public void getTopConnectedConcepts() throws FileNotFoundException {
-        Node root = get("Botany");
+        Node root = get("wood");
+        HashMap<String, Integer> frequencies = getFrequencies();
 
         try {
+            int max = frequencies.get("a");
             // this is fucking ridiculous - use a treemap<K, V>?
             SizedMaxMap arr = new SizedMaxMap(10);
 
             Object[] keys = root.connectedConcepts.keySet().toArray();
 
             Object[] vals = root.connectedConcepts.values().toArray();
+
             for(int i = 0; i < root.connectedConcepts.size(); i++) {
-                arr.insert((Integer)vals[i], keys[i]);
+                double val = (double) ((int) vals[i]);
+                String name = ((Node) keys[i]).name;
+                Integer frequency = frequencies.get(name);
+                double relativeStrength = Math.pow(1- (frequency / (double) max), 2);
+                double weightedStrength = val * relativeStrength;
+
+                arr.insert(weightedStrength, keys[i]);
             }
 
             for(int i = 0; i < arr.maxSize; i++){
-                System.out.format("%s - %d\n", ((Node)arr.getValues()[i]).name,arr.getKeys()[i]);
+                System.out.println(((Node)arr.getValues()[i]).name + " - " + arr.getKeys()[i]);
             }
         }
         catch (InvalidArgumentException e){
@@ -64,35 +75,20 @@ public class Analyser {
 
         return rootNode;
     }
+
+    public HashMap<String,Integer> getFrequencies() throws FileNotFoundException {
+        HashMap<String, Integer> freqs = new HashMap<>();
+        FileReader reader = new FileReader("freq_output.txt");
+        Scanner in = new Scanner(reader);
+
+        while(in.hasNextLine()){
+            String line = in.nextLine();
+
+            String[] content = line.split("=");
+
+            freqs.put(content[0], Integer.parseInt(content[1]));
+        }
+
+        return freqs;
+    }
 }
-
-//import java.io.Console;
-//import java.util.regex.Pattern;
-//import java.util.regex.Matcher;
-//
-//public class Analyser {
-//
-//    public static void getTopConnectedConcepts(String[] args){
-//        Console console = System.console();
-//            Pattern pattern =
-//                    Pattern.compile(".*\\((.*)\\).*");
-//
-//            Matcher matcher =
-//                    pattern.matcher("any string (in brackets) but not out");
-//
-//            boolean found = false;
-//            while (matcher.find()) {
-//                System.out.format("I found the text" +
-//                                " \"%s\" starting at " +
-//                                "index %d and ending at index %d.%n",
-//                        matcher.group(),
-//                        matcher.start(),
-//                        matcher.end());
-//                found = true;
-//            }
-//            if(!found){
-//                System.out.format("No match found.%n");
-//            }
-//    }
-//}
-

@@ -7,7 +7,7 @@ import com.sun.javaws.exceptions.InvalidArgumentException;
  */
 public class SizedMaxMap {
     public final int maxSize;
-    private int[] keys;
+    private double[] keys;
     private Object[] values;
 
     public SizedMaxMap(int maxSize) throws InvalidArgumentException {
@@ -15,11 +15,11 @@ public class SizedMaxMap {
             throw new InvalidArgumentException(new String[]{"maxSize must be greater than 0"});
         }
         this.maxSize = maxSize;
-        keys = new int[maxSize];
+        keys = new double[maxSize];
         values = new Object[maxSize];
     }
 
-    public boolean insert(int key, Object value){
+    public boolean insert(double key, Object value){
         if(key < keys[maxSize -1]){
             return false;
         }
@@ -44,7 +44,7 @@ public class SizedMaxMap {
         return true;
     }
 
-    public int[] getKeys() {
+    public double[] getKeys() {
         return keys;
     }
 
