@@ -1,5 +1,7 @@
 package ConceptGraph;
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Scanner;
@@ -12,9 +14,24 @@ public class Analyser {
     public void getTopConnectedConcepts() throws FileNotFoundException {
         Node root = get("Botany");
 
+        try {
+            // this is fucking ridiculous - use a treemap<K, V>?
+            SizedMaxMap arr = new SizedMaxMap(10);
 
-        for(int i = 0; i < root.connectedConcepts.size(); i++){
+            Object[] keys = root.connectedConcepts.keySet().toArray();
 
+            Object[] vals = root.connectedConcepts.values().toArray();
+            for(int i = 0; i < root.connectedConcepts.size(); i++) {
+                arr.insert((Integer)vals[i], keys[i]);
+            }
+
+            for(int i = 0; i < arr.maxSize; i++){
+                System.out.format("%s - %d\n", ((Node)arr.getValues()[i]).name,arr.getKeys()[i]);
+            }
+        }
+        catch (InvalidArgumentException e){
+            e.printStackTrace();
+            System.out.println("You have full control of this. Just don't set it to 0");
         }
     }
 
