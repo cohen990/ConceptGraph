@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 public class Scraper {
     private Queue<Uri> Links = new LinkedList<>();
-    private HashSet<Uri> SeenLinks = new HashSet<>();
+    private HashSet<String> SeenLinks = new HashSet<>();
     private HashMap<String, Integer> Frequency = new HashMap<>();
     private List<Uri> QueriedUris = new ArrayList<>();
     private HashMap<String, Node> Nodes = new HashMap<>();
@@ -160,8 +160,8 @@ public class Scraper {
                         if(href.equals("https://www.wikipedia.org/wiki/Wood")){
                             href = href;
                         }
-                        Uri uri = new Uri(href)
-                        if (SeenLinks.add(uri)) {
+                        Uri uri = new Uri(href);
+                        if (SeenLinks.add(uri.toString())) {
                             Links.add(uri);
                         }
                     } catch (MalformedURLException e) {
