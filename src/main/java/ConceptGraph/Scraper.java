@@ -52,19 +52,25 @@ public class Scraper {
 
                 String title = doc.getElementById("firstHeading").text();
 
+                Elements redirectedFrom = doc.select(".mw-redirectedfrom a");
+
+                if(!redirectedFrom.isEmpty()){
+                    title = redirectedFrom.first().text();
+                }
+
                 if(title.toLowerCase().equals("wood")){
                     title = title;
                 }
                 int hash = Hasher.simpleHash(title);
 
                 if (SeenHashCodes.contains(hash)) {
-                    writer = new FileWriter("graph/" + Hasher.simpleHash(title) + ".grp", true);
+                    writer = new FileWriter("output/graph/" + Hasher.simpleHash(title) + ".grp", true);
                 } else {
                     SeenHashCodes.add(hash);
-                    writer = new FileWriter("graph/" + Hasher.simpleHash(title) + ".grp", false);
+                    writer = new FileWriter("output/graph/" + Hasher.simpleHash(title) + ".grp", false);
                 }
 
-                System.out.println("Writing to graph/" + hash + ".grp");
+                System.out.println("Writing to output/graph/" + hash + ".grp");
 
                 Node node;
                 if (!Nodes.containsKey(title)) {
@@ -83,7 +89,7 @@ public class Scraper {
                 doc.getElementsByClass("refbegin").remove();
                 String mainBody = doc.getElementById("mw-content-text").text();
                 // currently case sensitive
-                String[] words = mainBody.split("\\W");
+                String[] words = mainBody.split("[\\W|_]");
 
                 Object[] filtered = Stream.of(words)
                         .map((word) -> word.toLowerCase().trim())
@@ -149,24 +155,34 @@ public class Scraper {
 
         for (Element link : links) {
             String href = link.attr("href");
-            if (href.startsWith("/") && !href.contains("File:")) {
-                if (href.startsWith("//")) {
-                    href = "http:" + href;
-                } else {
-                    href = "https://www.wikipedia.org" + href;
-                }
-                if (href.contains("wikipedia.org")) {
-                    try {
-                        if(href.equals("https://www.wikipedia.org/wiki/Wood")){
+            addUriToLinks(href);
+        }
+    }
+
+    private void addUriToLinks(String href) {
+        if (href.startsWith("/") && !href.contains("File:")) {
+            if (href.startsWith("//")) {
+                href = "http:" + href;
+            } else {
+                href = "https://en.wikipedia.org" + href;
+            }
+            if (href.contains("wikipedia.org/wiki")) {
+                try {
+                    if(href.startsWith("http://www.")){
+                        href = href.replace("http://www.", "https://en.");
+                    }
+                    if(href.startsWith("https://www.")){
+                        href = href.replace("https://www.", "https://en.");
+                    }
+                    Uri uri = new Uri(href);
+                    if (SeenLinks.add(uri.toString())) {
+                        if(uri.toString().equals("https://en.wikipedia.org/wiki/Tree")){
                             href = href;
                         }
-                        Uri uri = new Uri(href);
-                        if (SeenLinks.add(uri.toString())) {
-                            Links.add(uri);
-                        }
-                    } catch (MalformedURLException e) {
-                        System.out.println(e.getLocalizedMessage());
+                        Links.add(uri);
                     }
+                } catch (MalformedURLException e) {
+                    System.out.println(e.getLocalizedMessage());
                 }
             }
         }
@@ -182,7 +198,7 @@ public class Scraper {
     }
 
     private void WriteOutput() throws IOException {
-        FileWriter freq = new FileWriter("freq_output.txt");
+        FileWriter freq = new FileWriter("output/freq_output.txt");
 
         for (String key : Frequency.keySet()) {
             freq.write(key + "=" + Frequency.get(key) + System.getProperty("line.separator"));
@@ -192,7 +208,7 @@ public class Scraper {
 
         Frequency.clear();
 
-        FileWriter queried = new FileWriter("queried.txt");
+        FileWriter queried = new FileWriter("output/queried.txt");
 
         for (Uri uri : QueriedUris) {
             queried.write(uri.toString() + System.getProperty("line.separator"));

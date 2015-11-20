@@ -14,8 +14,15 @@ public class Analyser {
     private StringHasher Hasher = new StringHasher();
 
     public void getTopConnectedConcepts() throws FileNotFoundException {
-        Node root = get("wood");
+        Node root = get("tree");
         HashMap<String, Integer> frequencies = getFrequencies();
+
+        String strMax = "";
+        for(String str : frequencies.keySet()){
+            if(str.length() > strMax.length()){
+                strMax = str;
+            }
+        }
 
         try {
             int max = frequencies.get("a");
@@ -50,7 +57,7 @@ public class Analyser {
     }
 
     private Node get(String nodeName) throws FileNotFoundException {
-        String path = "graph/" + Hasher.simpleHash(nodeName) + ".grp";
+        String path = "output/graph/" + Hasher.simpleHash(nodeName) + ".grp";
         FileReader reader = new FileReader(path);
         Scanner scanner = new Scanner(reader);
 
@@ -81,7 +88,7 @@ public class Analyser {
 
     public HashMap<String,Integer> getFrequencies() throws FileNotFoundException {
         HashMap<String, Integer> freqs = new HashMap<>();
-        FileReader reader = new FileReader("freq_output.txt");
+        FileReader reader = new FileReader("output/freq_output.txt");
         Scanner in = new Scanner(reader);
 
         while(in.hasNextLine()){
