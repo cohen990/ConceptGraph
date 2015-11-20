@@ -2,7 +2,6 @@ package ConceptGraph;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
 
-import java.io.Console;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.HashMap;
@@ -12,9 +11,10 @@ import java.util.regex.Pattern;
 
 public class Analyser {
     private StringHasher Hasher = new StringHasher();
+    private Logger logger = new Logger();
 
     public void getTopConnectedConcepts() throws FileNotFoundException {
-        Node root = get("tree");
+        Node root = get("trichomes");
         HashMap<String, Integer> frequencies = getFrequencies();
 
         String strMax = "";
@@ -36,9 +36,7 @@ public class Analyser {
             for(int i = 0; i < root.connectedConcepts.size(); i++) {
                 double val = (double) ((int) vals[i]);
                 String name = ((Node) keys[i]).name;
-                if(name.equals("wood")){
-                    val = val;
-                }
+
                 Integer frequency = frequencies.get(name);
                 double relativeStrength = Math.pow(1- (frequency / (double) max), 2);
                 double weightedStrength = val * relativeStrength;
@@ -51,8 +49,8 @@ public class Analyser {
             }
         }
         catch (InvalidArgumentException e){
-            e.printStackTrace();
-            System.out.println("You have full control of this. Just don't set it to 0");
+            logger.logException(e);
+            logger.log("You have full control of this. Just don't set it to 0");
         }
     }
 
@@ -71,6 +69,9 @@ public class Analyser {
         Node rootNode = new Node(root);
         while(scanner.hasNextLine()){
             String curr = scanner.nextLine();
+            if(curr.startsWith("!")){
+                break;
+            }
             regex = Pattern.compile("\\s(\\d*): \"(.*)\"");
             matcher.usePattern(regex);
             matcher.reset(curr);
