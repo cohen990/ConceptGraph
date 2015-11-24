@@ -38,6 +38,9 @@ public class Analyser {
                 String name = ((Node) keys[i]).name;
 
                 Integer frequency = frequencies.get(name);
+                if(frequency == null){
+                    continue;
+                }
                 double relativeStrength = Math.pow(1- (frequency / (double) max), 2);
                 double weightedStrength = val * relativeStrength;
 
