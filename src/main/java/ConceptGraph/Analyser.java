@@ -14,7 +14,10 @@ public class Analyser {
     private Logger logger = new Logger();
 
     public void getTopConnectedConcepts() throws FileNotFoundException {
-        Node root = get("trichomes");
+        Node root = get("pollen");
+
+        logger.log("Querying " + root.toStringWithoutChildren());
+
         HashMap<String, Integer> frequencies = getFrequencies();
 
         String strMax = "";
