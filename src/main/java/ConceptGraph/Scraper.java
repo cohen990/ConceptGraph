@@ -5,8 +5,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -14,11 +14,13 @@ public class Scraper {
     private final Processor processor;
     private final StringHasher hasher;
     private final Logger logger;
+    private FileStorage fileStorage;
 
     public Scraper(){
         this.processor = new Processor();
         this.hasher = new StringHasher();
         this.logger = new Logger();
+        this.fileStorage = new FileStorage();
     }
 
     public void scrape() throws IOException {
@@ -33,7 +35,7 @@ public class Scraper {
             }
             Uri curr = Storage.Links.remove();
             logger.log("querying " + curr.toString());
-            FileWriter writer = null;
+            Writer writer = null;
             try {
                 logger.logDate();
                 Document doc = getDocument(curr);
@@ -49,12 +51,12 @@ public class Scraper {
         processor.writeOutput();
     }
 
-    private FileWriter parseDocument(Uri currUri, FileWriter writer, Document doc) throws IOException {
+    private Writer parseDocument(Uri currUri, Writer writer, Document doc) throws IOException {
         Timer timer = Timer.startNew();
 
         String title = getTitle(doc);
 
-        writer = addToSeenHashes(writer, title);
+        writer = fileStorage.getWriter(writer, title);
 
         Node node = Storage.addNewNodeToNodes(currUri, title);
 
@@ -69,8 +71,6 @@ public class Scraper {
 
         processor.getUrisFromDocument(doc);
         processor.getNodesFromWords(words, node);
-
-
         processor.writeNode(node, writer);
         timer.stop();
 
@@ -97,19 +97,6 @@ public class Scraper {
         timer.stop();
         logger.log("Document fetched in " + timer.elapsedSeconds() + " seconds");
         return doc;
-    }
-
-    private FileWriter addToSeenHashes(FileWriter writer, String title) throws IOException {
-        int hash = hasher.simpleHash(title);
-
-        if (!Storage.SeenHashCodes.add(hash)) {
-            writer = new FileWriter("output/graph/" + hasher.simpleHash(title) + ".grp", true);
-        } else {
-            writer = new FileWriter("output/graph/" + hasher.simpleHash(title) + ".grp", false);
-        }
-
-        logger.log("Writing to output/graph/" + hasher.simpleHash(title) + ".grp");
-        return writer;
     }
 
     private String[] getWords(String mainBody) {
