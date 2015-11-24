@@ -12,13 +12,11 @@ import java.util.stream.Stream;
 
 public class Scraper {
     private final Processor processor;
-    private final StringHasher hasher;
     private final Logger logger;
     private FileStorage fileStorage;
 
     public Scraper(){
         this.processor = new Processor();
-        this.hasher = new StringHasher();
         this.logger = new Logger();
         this.fileStorage = new FileStorage();
     }

@@ -1,7 +1,6 @@
 package ConceptGraph;
 
 import com.sun.jndi.toolkit.url.Uri;
-import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -10,11 +9,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.MalformedURLException;
-import java.text.DateFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.stream.Stream;
 
 public class Processor {
     public void writeNode(Node node, Writer nodes) throws IOException {
@@ -76,9 +70,6 @@ public class Processor {
                     }
                     Uri uri = new Uri(href);
                     if (Storage.SeenLinks.add(uri.toString())) {
-                        if(uri.toString().equals("https://en.wikipedia.org/wiki/Tree")){
-                            href = href;
-                        }
                         Storage.Links.add(uri);
                     }
                 } catch (MalformedURLException e) {
