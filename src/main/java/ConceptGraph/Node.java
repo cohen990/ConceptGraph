@@ -54,6 +54,18 @@ public class Node{
     }
 
     public void addConnection(Node node, int weight){
-        connectedConcepts.putIfAbsent(node, weight);
+        addConnection(node, weight, false);
+    }
+
+    public void addConnection(Node node, int weight, boolean overwrite){
+        if(node.name.toLowerCase().equals(name.toLowerCase())){
+            return;
+        }
+        if(overwrite) {
+            connectedConcepts.put(node, weight);
+        }
+        else{
+            connectedConcepts.putIfAbsent(node, weight);
+        }
     }
 }

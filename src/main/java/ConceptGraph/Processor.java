@@ -30,17 +30,10 @@ public class Processor {
             if (root.connectedConcepts.containsKey(node)) {
                 strength = root.connectedConcepts.get(node) + 1;
             } else {
-                addWordToHashSet(word);
+                addOrUpdateFrequency(word);
             }
 
-            root.connectedConcepts.put(node, strength);
-
-            strength = 1;
-            if (node.connectedConcepts.containsKey(root)) {
-                strength = node.connectedConcepts.get(root) + 1;
-            }
-
-            node.connectedConcepts.putIfAbsent(root, strength);
+            root.addConnection(node, strength, true);
         }
     }
 
@@ -79,7 +72,7 @@ public class Processor {
         }
     }
 
-    public void addWordToHashSet(String word) {
+    public void addOrUpdateFrequency(String word) {
         if (!word.isEmpty()) {
             if (!Storage.Frequency.containsKey(word)) {
                 Storage.Frequency.put(word, 0);
