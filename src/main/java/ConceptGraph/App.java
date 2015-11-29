@@ -11,7 +11,7 @@ public class App {
             analyser.getTopConnectedConcepts();
         }
         else{
-            Scraper scraper = new Scraper();
+            Scraper scraper = new XmlScraper();
             scraper.scrape();
         }
     }

@@ -1,6 +1,8 @@
 package ConceptGraph;
 
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -8,6 +10,12 @@ import java.util.Date;
 import java.util.Locale;
 
 public class Logger {
+    private final FileWriter file;
+
+    public Logger() throws IOException {
+        this.file = new FileWriter("output/log.txt");
+    }
+
     public void logDate() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Date date = new Date();
@@ -19,7 +27,12 @@ public class Logger {
     }
 
     public void log(String message, boolean withNewLine) {
-        System.out.println(message + (withNewLine ? System.getProperty("line.separator") : ""));
+        try{
+            file.write(message + System.getProperty("line.separator") + (withNewLine ? System.getProperty("line.separator") : ""));
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     public void logTimeElapsed(String actionCompleted, Timer timer, boolean withNewLine) {
@@ -35,5 +48,9 @@ public class Logger {
 
     public void logException(Exception e){
         e.printStackTrace();
+    }
+
+    public void logWarning(String warning) {
+        log("!!! --> " + warning, true);
     }
 }

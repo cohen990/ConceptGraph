@@ -23,8 +23,19 @@ public class Storage {
     public static List<Uri> QueriedUris = new ArrayList<>();
     public static HashMap<String, Node> Nodes = new HashMap<>();
     public static HashSet<Integer> SeenHashCodes = new HashSet<>();
+    private static Logger logger;
 
-    public static Node addNewNodeToNodes(Uri curr, String title) {
+    static {
+        try {
+            logger = new Logger();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static int numCollisions = 0;
+
+    public static Node getNodeIfExists(Uri curr, String title) {
         Node node;
         if (!Storage.Nodes.containsKey(title)) {
             node = new Node(title, curr);
@@ -33,6 +44,17 @@ public class Storage {
             node.setUri(curr);
         }
         return node;
+    }
+
+    public static Node getNodeIfExists(String title) {
+        Node node;
+        if (!Storage.Nodes.containsKey(title)) {
+            node = new Node(title);
+            return node;
+        }
+
+        logger.logWarning("Node " + title + " already exists. " + ( ++ numCollisions) + " collision(s) so far.");
+        return null;
     }
 }
 
