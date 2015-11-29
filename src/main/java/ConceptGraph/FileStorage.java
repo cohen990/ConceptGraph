@@ -12,19 +12,26 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 public class FileStorage {
-    private Logger logger = new Logger();
+    private Logger logger;
     private StringHasher hasher = new StringHasher();
 
-    public Writer getWriter(Writer writer, String title) throws IOException {
-        int hash = hasher.simpleHash(title);
+    public FileStorage() {
+        try {
+            logger = new Logger();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
-        if (!Storage.SeenHashCodes.add(hash)) {
-            writer = new FileWriter("output/graph/" + hasher.simpleHash(title) + ".grp", true);
+    public Writer getWriter(Writer writer, String title) throws IOException {
+        String fileName = title.replace(" ", "_");
+        if (!Storage.SeenLinks.add(title)) {
+            writer = new FileWriter("output/graph/" + fileName + ".grp", true);
         } else {
-            writer = new FileWriter("output/graph/" + hasher.simpleHash(title) + ".grp", false);
+            writer = new FileWriter("output/graph/" + fileName + ".grp", false);
         }
 
-        logger.log("Writing to output/graph/" + hasher.simpleHash(title) + ".grp");
+        logger.log("Writing to output/graph/" + fileName + ".grp");
         return writer;
     }
 }

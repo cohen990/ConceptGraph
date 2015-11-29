@@ -4,6 +4,7 @@ import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
@@ -11,10 +12,18 @@ import java.util.regex.Pattern;
 
 public class Analyser {
     private StringHasher Hasher = new StringHasher();
-    private Logger logger = new Logger();
+    private Logger logger;
+
+    public Analyser() {
+        try {
+            logger = new Logger();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void getTopConnectedConcepts() throws FileNotFoundException {
-        Node root = get("pollen");
+        Node root = get("biathlon");
 
         logger.log("Querying " + root.toStringWithoutChildren());
 
@@ -61,7 +70,7 @@ public class Analyser {
     }
 
     private Node get(String nodeName) throws FileNotFoundException {
-        String path = "output/graph/" + Hasher.simpleHash(nodeName) + ".grp";
+        String path = "output/graph/" + nodeName.replace(" ", "_") + ".grp";
         FileReader reader = new FileReader(path);
         Scanner scanner = new Scanner(reader);
 
