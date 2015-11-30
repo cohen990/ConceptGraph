@@ -57,6 +57,7 @@ public class XmlScraper implements Scraper {
 
         if(node == null){
             logger.logWarning("Unable to create the node: " + page.title);
+            return;
         }
 
         Storage.Nodes.put(page.title, node);
