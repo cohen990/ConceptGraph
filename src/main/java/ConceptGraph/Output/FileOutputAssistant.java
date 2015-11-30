@@ -1,4 +1,7 @@
-package ConceptGraph;
+package ConceptGraph.Output;
+
+import ConceptGraph.Output.Logging.DefaultLogger;
+import ConceptGraph.Output.Logging.Logger;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -31,9 +34,9 @@ public class FileOutputAssistant {
         File file = new File(directory);
         if (!file.exists()) {
             if (file.mkdir()) {
-                logger.log(directory + " has been created!");
+                logger.log("The directory \"" + directory + "\" has been created!");
             } else {
-                logger.logWarning("Failed to create " + directory + "!");
+                logger.logWarning("Failed to create the directory \"" + directory + "\"");
             }
         }
     }

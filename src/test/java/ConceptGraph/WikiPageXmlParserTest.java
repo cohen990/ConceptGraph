@@ -1,5 +1,7 @@
 package ConceptGraph;
 
+        import ConceptGraph.DataStructures.WikiPage;
+        import ConceptGraph.Input.WikiPageXmlParser;
         import junit.framework.Test;
         import junit.framework.TestCase;
         import junit.framework.TestSuite;

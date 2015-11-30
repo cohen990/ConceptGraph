@@ -1,4 +1,12 @@
-package ConceptGraph;
+package ConceptGraph.Input;
+
+import ConceptGraph.DataStructures.Node;
+import ConceptGraph.DataStructures.Storage;
+import ConceptGraph.DataStructures.WikiPage;
+import ConceptGraph.Output.Logging.Logger;
+import ConceptGraph.Output.Storage.GraphStore;
+import ConceptGraph.Processor;
+import ConceptGraph.Utilities.Timer;
 
 import java.io.*;
 import java.util.Arrays;
@@ -12,13 +20,12 @@ public class XmlScraper implements Scraper {
     private WikiDumpReader reader;
     private int count;
 
-    public XmlScraper() throws FileNotFoundException {
-        this.processor = new Processor();
-        this.logger = FileLogger.Create();
-        this.graphStore = new SingleFileGraphStore();
-        Reader baseReader = new FileReader("C:\\Users\\Dan\\Desktop\\wikidump\\wikidump.20151002.xml");
-        this.reader = new WikiDumpReader(baseReader);
-        this.parser = new WikiPageXmlParser();
+    public XmlScraper(Processor processor, Logger logger, GraphStore graphStore, WikiDumpReader wikiReader, WikiPageXmlParser xmlParser) throws FileNotFoundException {
+        this.processor = processor;
+        this.logger = logger;
+        this.graphStore = graphStore;
+        this.reader = wikiReader;
+        this.parser = xmlParser;
     }
 
     public void scrape() throws IOException {

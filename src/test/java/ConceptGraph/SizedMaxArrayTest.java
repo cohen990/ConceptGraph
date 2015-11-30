@@ -1,5 +1,6 @@
 package ConceptGraph;
 
+import ConceptGraph.DataStructures.SizedMaxMap;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 import junit.framework.Test;
 import junit.framework.TestCase;

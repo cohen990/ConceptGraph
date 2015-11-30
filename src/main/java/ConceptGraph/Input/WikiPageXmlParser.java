@@ -1,12 +1,13 @@
-package ConceptGraph;
+package ConceptGraph.Input;
 
+import ConceptGraph.DataStructures.WikiPage;
+import ConceptGraph.Output.Logging.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.*;
-import java.io.IOException;
 import java.io.StringReader;
 
 /**
@@ -15,8 +16,8 @@ import java.io.StringReader;
 public class WikiPageXmlParser {
     private Logger logger;
 
-    public WikiPageXmlParser() {
-        this.logger = FileLogger.Create();
+    public WikiPageXmlParser(Logger logger) {
+        this.logger = logger;
     }
 
     public WikiPage parse(String input) {

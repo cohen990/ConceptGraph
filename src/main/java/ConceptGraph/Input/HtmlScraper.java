@@ -1,5 +1,11 @@
-package ConceptGraph;
+package ConceptGraph.Input;
 
+import ConceptGraph.*;
+import ConceptGraph.DataStructures.Node;
+import ConceptGraph.DataStructures.Storage;
+import ConceptGraph.Output.Logging.Logger;
+import ConceptGraph.Output.Storage.GraphStore;
+import ConceptGraph.Utilities.Timer;
 import com.sun.jndi.toolkit.url.Uri;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,10 +20,10 @@ public class HtmlScraper implements Scraper {
     private Logger logger;
     private GraphStore graphStore;
 
-    public HtmlScraper(){
-        this.processor = new Processor();
-        this.logger = FileLogger.Create();
-        this.graphStore = new SingleFileGraphStore();
+    public HtmlScraper(Processor processor, Logger logger, GraphStore graphStore){
+        this.processor = processor;
+        this.logger = logger;
+        this.graphStore = graphStore;
     }
 
     public void scrape() throws IOException {
@@ -40,7 +46,7 @@ public class HtmlScraper implements Scraper {
     }
 
     private void parseDocument(Uri currUri, Document doc) throws IOException {
-        Timer timer = Timer.startNew();
+        ConceptGraph.Utilities.Timer timer = Timer.startNew();
 
         String title = getTitle(doc);
 

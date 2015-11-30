@@ -1,21 +1,22 @@
 package ConceptGraph;
 
+import ConceptGraph.DataStructures.Node;
+import ConceptGraph.DataStructures.SizedMaxMap;
+import ConceptGraph.Output.Logging.Logger;
 import com.sun.javaws.exceptions.InvalidArgumentException;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Analyser {
-    private StringHasher Hasher = new StringHasher();
     private Logger logger;
 
-    public Analyser() {
-        logger = FileLogger.Create();
+    public Analyser(Logger logger) {
+        this.logger = logger;
     }
 
     public void getTopConnectedConcepts() throws FileNotFoundException {

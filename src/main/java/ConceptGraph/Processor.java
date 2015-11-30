@@ -1,5 +1,8 @@
 package ConceptGraph;
 
+import ConceptGraph.DataStructures.Node;
+import ConceptGraph.DataStructures.Storage;
+import ConceptGraph.Output.FileOutputAssistant;
 import com.sun.jndi.toolkit.url.Uri;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -7,15 +10,14 @@ import org.jsoup.select.Elements;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
 import java.net.MalformedURLException;
 
 public class Processor {
 
     private final FileOutputAssistant fileOutputAssistant;
 
-    public Processor(){
-        fileOutputAssistant = new FileOutputAssistant();
+    public Processor(FileOutputAssistant fileOutputAssistant){
+        this.fileOutputAssistant = fileOutputAssistant;
     }
 
     public void getNodesFromWords(String[] words, Node root) {

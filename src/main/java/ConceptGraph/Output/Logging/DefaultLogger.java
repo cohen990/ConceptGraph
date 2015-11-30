@@ -1,5 +1,7 @@
-package ConceptGraph;
+package ConceptGraph.Output.Logging;
 
+
+import ConceptGraph.Utilities.Timer;
 
 import java.text.DateFormat;
 import java.text.NumberFormat;

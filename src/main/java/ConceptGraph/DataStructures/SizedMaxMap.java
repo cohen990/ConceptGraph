@@ -1,4 +1,4 @@
-package ConceptGraph;
+package ConceptGraph.DataStructures;
 
 import com.sun.javaws.exceptions.InvalidArgumentException;
 
