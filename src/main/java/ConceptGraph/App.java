@@ -8,7 +8,7 @@ import ConceptGraph.Output.FileOutputAssistant;
 import ConceptGraph.Output.Logging.FileLogger;
 import ConceptGraph.Output.Logging.Logger;
 import ConceptGraph.Output.Storage.GraphStore;
-import ConceptGraph.Output.Storage.SingleFileGraphStore;
+import ConceptGraph.Output.Storage.IndividualFilesGraphStore;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -19,7 +19,6 @@ public class App {
     public static void main(String[] args) throws IOException {
         boolean analyse = false;
 //        analyse = true;
-
         FileOutputAssistant fileOutput = new FileOutputAssistant();
         Logger logger = FileLogger.Create(fileOutput);
         if(analyse){
@@ -42,11 +41,10 @@ public class App {
 
     private static Scraper getScraper(FileOutputAssistant fileOutput, Logger logger) throws FileNotFoundException {
         Processor processor = new Processor(fileOutput);
-        GraphStore graphStore = new SingleFileGraphStore(fileOutput, logger);
-        Reader baseReader = new FileReader("C:\\Users\\Dan\\Desktop\\wikidump\\wikidump.20151002.xml");
+        GraphStore graphStore = new IndividualFilesGraphStore(fileOutput, logger);
+        Reader baseReader = new FileReader("C:\\wikidump\\enwiki-20150205-pages-articles-multistream.xml");
         WikiDumpReader wikiReader = new WikiDumpReader(baseReader);
         WikiPageXmlParser xmlParser = new WikiPageXmlParser(logger);
         return new XmlScraper(processor, logger, graphStore, wikiReader, xmlParser);
     }
 }
-

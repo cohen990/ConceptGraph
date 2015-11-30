@@ -34,6 +34,7 @@ public class FileLogger extends DefaultLogger {
     public void log(String message, boolean withNewLine) {
         try{
             file.write(message + System.getProperty("line.separator") + (withNewLine ? System.getProperty("line.separator") : ""));
+            file.flush();
         }
         catch(Exception e){
             e.printStackTrace();

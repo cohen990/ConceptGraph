@@ -14,11 +14,6 @@ public class Storage {
     public static List<Uri> QueriedUris = new ArrayList<>();
     public static HashMap<String, Node> Nodes = new HashMap<>();
     public static HashSet<Integer> SeenHashCodes = new HashSet<>();
-    private static Logger logger;
-
-    static {
-        logger = FileLogger.Create(new FileOutputAssistant());
-    }
 
     private static int numCollisions = 0;
 
@@ -40,8 +35,7 @@ public class Storage {
             return node;
         }
 
-        logger.logWarning("Node " + title + " already exists. " + ( ++ numCollisions) + " collision(s) so far.");
-        return null;
+        return Storage.Nodes.get(title);
     }
 }
 

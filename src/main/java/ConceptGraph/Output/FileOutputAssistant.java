@@ -42,6 +42,9 @@ public class FileOutputAssistant {
     }
 
     public String escape(String input) {
-        return input.replace(" ", "_");
+        input = input.replace(" ", "_");
+        input = input.replace("?", "#0x63");
+        input = input.replace("*", "#0x42");
+        return input.replace("/", "#0x47");
     }
 }
