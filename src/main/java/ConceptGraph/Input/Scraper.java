@@ -1,4 +1,4 @@
-package ConceptGraph;
+package ConceptGraph.Input;
 
 import java.io.IOException;
 

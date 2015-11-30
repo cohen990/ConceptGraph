@@ -1,4 +1,6 @@
-package ConceptGraph;
+package ConceptGraph.Output.Logging;
+
+import ConceptGraph.Utilities.Timer;
 
 /**
  * Created by danco on 29/11/2015.

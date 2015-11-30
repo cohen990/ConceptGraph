@@ -1,8 +1,10 @@
-package ConceptGraph;
+package ConceptGraph.DataStructures;
 
+import ConceptGraph.Output.FileOutputAssistant;
+import ConceptGraph.Output.Logging.FileLogger;
+import ConceptGraph.Output.Logging.Logger;
 import com.sun.jndi.toolkit.url.Uri;
 
-import java.io.IOException;
 import java.util.*;
 
 public class Storage {
@@ -15,7 +17,7 @@ public class Storage {
     private static Logger logger;
 
     static {
-        logger = FileLogger.Create();
+        logger = FileLogger.Create(new FileOutputAssistant());
     }
 
     private static int numCollisions = 0;

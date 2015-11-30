@@ -1,27 +1,24 @@
-package ConceptGraph;
+package ConceptGraph.Output.Logging;
 
+
+import ConceptGraph.Output.FileOutputAssistant;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 public class FileLogger extends DefaultLogger {
     private final FileWriter file;
     private static String logFileName = "log.txt";
     private final FileOutputAssistant fileOutputAssistant;
 
-    private FileLogger() throws IOException {
-        this.fileOutputAssistant = new FileOutputAssistant();
+    private FileLogger(FileOutputAssistant outputAssistant) throws IOException {
+        this.fileOutputAssistant = outputAssistant;
         this.file = fileOutputAssistant.getWriter(logFileName);
     }
 
-    public static Logger Create(){
+    public static Logger Create(FileOutputAssistant outputAssistant){
         try {
-            return new FileLogger();
+            return new FileLogger(outputAssistant);
         } catch (IOException e) {
             Logger logger = new DefaultLogger();
 

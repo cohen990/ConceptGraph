@@ -1,14 +1,4 @@
-package ConceptGraph;
-
-import com.sun.jndi.toolkit.url.Uri;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.stream.Stream;
+package ConceptGraph.Utilities;
 
 public class Timer {
     private long startTime;

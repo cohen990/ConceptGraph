@@ -1,4 +1,4 @@
-package ConceptGraph;
+package ConceptGraph.Utilities;
 
 /**
  * Created by Dan on 18/11/2015.

@@ -1,16 +1,19 @@
-package ConceptGraph;
+package ConceptGraph.Output.Storage;
 
-import java.io.FileWriter;
+import ConceptGraph.DataStructures.Node;
+import ConceptGraph.Output.FileOutputAssistant;
+import ConceptGraph.Output.Logging.Logger;
+import ConceptGraph.DataStructures.Storage;
+
 import java.io.IOException;
 import java.io.Writer;
 
 public class SingleFileGraphStore extends GraphStore {
     private final FileOutputAssistant fileOutputAssistant;
-    private Logger logger;
 
-    public SingleFileGraphStore() {
-        logger = FileLogger.Create();
-        fileOutputAssistant = new FileOutputAssistant();
+    public SingleFileGraphStore(FileOutputAssistant fileOutputAssistant, Logger logger) {
+        super(logger);
+        this.fileOutputAssistant = fileOutputAssistant;
     }
 
     private Writer getWriter(String title) {
@@ -28,7 +31,6 @@ public class SingleFileGraphStore extends GraphStore {
         } finally {
             return writer;
         }
-
     }
 
     @Override
