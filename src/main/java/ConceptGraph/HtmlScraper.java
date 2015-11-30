@@ -17,11 +17,7 @@ public class HtmlScraper {
 
     public HtmlScraper(){
         this.processor = new Processor();
-        try {
-            this.logger = new Logger();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.logger = FileLogger.Create();
         this.fileStorage = new FileStorage();
     }
 

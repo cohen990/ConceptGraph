@@ -15,11 +15,7 @@ public class Analyser {
     private Logger logger;
 
     public Analyser() {
-        try {
-            logger = new Logger();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        logger = FileLogger.Create();
     }
 
     public void getTopConnectedConcepts() throws FileNotFoundException {

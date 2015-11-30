@@ -16,11 +16,7 @@ public class WikiPageXmlParser {
     private Logger logger;
 
     public WikiPageXmlParser() {
-        try {
-            this.logger = new Logger();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.logger = FileLogger.Create();
     }
 
     public WikiPage parse(String input) {
