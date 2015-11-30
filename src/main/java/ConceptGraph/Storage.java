@@ -1,20 +1,9 @@
 package ConceptGraph;
 
 import com.sun.jndi.toolkit.url.Uri;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Writer;
-import java.net.MalformedURLException;
-import java.text.DateFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Stream;
 
 public class Storage {
     public static Queue<Uri> Links = new LinkedList<>();
@@ -26,11 +15,7 @@ public class Storage {
     private static Logger logger;
 
     static {
-        try {
-            logger = new Logger();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        logger = FileLogger.Create();
     }
 
     private static int numCollisions = 0;

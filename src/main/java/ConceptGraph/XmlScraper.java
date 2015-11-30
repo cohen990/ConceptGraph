@@ -19,11 +19,7 @@ public class XmlScraper implements Scraper {
 
     public XmlScraper() throws FileNotFoundException {
         this.processor = new Processor();
-        try {
-            this.logger = new Logger();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.logger = FileLogger.Create();
         this.fileStorage = new FileStorage();
         Reader baseReader = new FileReader("C:\\Users\\Dan\\Desktop\\wikidump\\wikidump.20151002.xml");
         this.reader = new WikiDumpReader(baseReader);
