@@ -1,10 +1,5 @@
 package ConceptGraph;
 
-import com.sun.jndi.toolkit.url.Uri;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
 import java.io.*;
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -13,14 +8,14 @@ public class XmlScraper implements Scraper {
     private final Processor processor;
     private Logger logger;
     private final WikiPageXmlParser parser;
-    private FileStorage fileStorage;
+    private GraphStore graphStore;
     private WikiDumpReader reader;
     private int count;
 
     public XmlScraper() throws FileNotFoundException {
         this.processor = new Processor();
         this.logger = FileLogger.Create();
-        this.fileStorage = new FileStorage();
+        this.graphStore = new SingleFileGraphStore();
         Reader baseReader = new FileReader("C:\\Users\\Dan\\Desktop\\wikidump\\wikidump.20151002.xml");
         this.reader = new WikiDumpReader(baseReader);
         this.parser = new WikiPageXmlParser();
@@ -41,31 +36,20 @@ public class XmlScraper implements Scraper {
                 return;
             }
 
-            Writer writer = null;
-            try {
-                logger.logDate();
-                writer = process(page, writer);
-            } catch (IOException e) {
-                logger.logException(e);
-            } finally {
-                if (writer != null) {
-                    writer.close();
-                }
-                pageXml = reader.getPage();
-            }
+            logger.logDate();
+            process(page);
+            pageXml = reader.getPage();
         }
         processor.writeOutput();
     }
 
-    private Writer process(WikiPage page, Writer writer) throws IOException {
+    private void process(WikiPage page) throws IOException {
         Timer timer = Timer.startNew();
-
-        writer = fileStorage.getWriter(writer, page.title);
 
         Node node = Storage.getNodeIfExists(page.title);
 
         if(node == null){
-            return null;
+            logger.logWarning("Unable to create the node: " + page.title);
         }
 
         Storage.Nodes.put(page.title, node);
@@ -73,13 +57,12 @@ public class XmlScraper implements Scraper {
         String[] words = getWords(page.getStrippedText());
 
         processor.getNodesFromWords(words, node);
-        processor.writeNode(node, writer);
+        graphStore.writeNodeToFile(node);
         timer.stop();
 
         logger.log((++ count) + " processed so far...");
         logger.logMemUsage();
         logger.logTimeElapsed("Document processed" , timer, true);
-        return writer;
     }
 
     private String[] getWords(String mainBody) {

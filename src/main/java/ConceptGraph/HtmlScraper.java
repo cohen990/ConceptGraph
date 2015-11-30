@@ -6,19 +6,18 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class HtmlScraper {
+public class HtmlScraper implements Scraper {
     private final Processor processor;
     private Logger logger;
-    private FileStorage fileStorage;
+    private GraphStore graphStore;
 
     public HtmlScraper(){
         this.processor = new Processor();
         this.logger = FileLogger.Create();
-        this.fileStorage = new FileStorage();
+        this.graphStore = new SingleFileGraphStore();
     }
 
     public void scrape() throws IOException {
@@ -33,28 +32,17 @@ public class HtmlScraper {
             }
             Uri curr = Storage.Links.remove();
             logger.log("querying " + curr.toString());
-            Writer writer = null;
-            try {
-                logger.logDate();
-                Document doc = getDocument(curr);
-                writer = parseDocument(curr, writer, doc);
-            } catch (IOException e) {
-                logger.logException(e);
-            } finally {
-                if (writer != null) {
-                    writer.close();
-                }
-            }
+            logger.logDate();
+            Document doc = getDocument(curr);
+            parseDocument(curr, doc);
         }
         processor.writeOutput();
     }
 
-    private Writer parseDocument(Uri currUri, Writer writer, Document doc) throws IOException {
+    private void parseDocument(Uri currUri, Document doc) throws IOException {
         Timer timer = Timer.startNew();
 
         String title = getTitle(doc);
-
-        writer = fileStorage.getWriter(writer, title);
 
         Node node = Storage.getNodeIfExists(currUri, title);
 
@@ -69,13 +57,12 @@ public class HtmlScraper {
 
         processor.getUrisFromDocument(doc);
         processor.getNodesFromWords(words, node);
-        processor.writeNode(node, writer);
+        graphStore.writeNodeToFile(node);
         timer.stop();
 
         logger.log(Storage.QueriedUris.size() + " queried so far...");
         logger.logMemUsage();
         logger.logTimeElapsed("Document processed" , timer, true);
-        return writer;
     }
 
     private String getTitle(Document doc) {

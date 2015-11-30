@@ -11,10 +11,11 @@ import java.io.Writer;
 import java.net.MalformedURLException;
 
 public class Processor {
-    public void writeNode(Node node, Writer nodes) throws IOException {
-        nodes.write(node.toString() + System.getProperty("line.separator") + System.getProperty("line.separator"));
-        node.written = true;
-        node.dropConnections();
+
+    private final FileOutputAssistant fileOutputAssistant;
+
+    public Processor(){
+        fileOutputAssistant = new FileOutputAssistant();
     }
 
     public void getNodesFromWords(String[] words, Node root) {
@@ -82,7 +83,7 @@ public class Processor {
     }
 
     public void writeOutput() throws IOException {
-        FileWriter freq = new FileWriter("output/freq_output.txt");
+        FileWriter freq = fileOutputAssistant.getWriter("freq_output.txt");
 
         for (String key : Storage.Frequency.keySet()) {
             freq.write(key + "=" + Storage.Frequency.get(key) + System.getProperty("line.separator"));
@@ -92,7 +93,7 @@ public class Processor {
 
         Storage.Frequency.clear();
 
-        FileWriter queried = new FileWriter("output/queried.txt");
+        FileWriter queried = fileOutputAssistant.getWriter("queried.txt");
 
         for (Uri uri : Storage.QueriedUris) {
             queried.write(uri.toString() + System.getProperty("line.separator"));
