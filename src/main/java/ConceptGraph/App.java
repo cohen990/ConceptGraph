@@ -35,12 +35,18 @@ public class App {
     }
 
     private static void scrape(FileOutputAssistant fileOutput, Logger logger) throws IOException {
-        Scraper scraper = getScraper(fileOutput, logger);
-        scraper.scrape();
+        Processor processor = new Processor(fileOutput);
+        Scraper scraper = getScraper(fileOutput, logger, processor);
+        try {
+            scraper.scrape();
+        }
+        catch(Exception e){
+            logger.logException(e);
+            processor.writeOutput();
+        }
     }
 
-    private static Scraper getScraper(FileOutputAssistant fileOutput, Logger logger) throws FileNotFoundException {
-        Processor processor = new Processor(fileOutput);
+    private static Scraper getScraper(FileOutputAssistant fileOutput, Logger logger, Processor processor) throws FileNotFoundException {
         GraphStore graphStore = new IndividualFilesGraphStore(fileOutput, logger);
         Reader baseReader = new FileReader("C:\\wikidump\\enwiki-20150205-pages-articles-multistream.xml");
         WikiDumpReader wikiReader = new WikiDumpReader(baseReader);

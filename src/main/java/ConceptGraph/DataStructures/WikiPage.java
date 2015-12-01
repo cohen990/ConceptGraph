@@ -11,6 +11,9 @@ public class WikiPage {
     public String rawText;
     private String strippedText;
     public String getStrippedText(){
+        if(rawText.isEmpty()){
+            return "";
+        }
         if(strippedText != null){
             return strippedText;
         }

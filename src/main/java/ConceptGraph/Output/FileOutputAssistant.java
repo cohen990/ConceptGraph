@@ -6,6 +6,7 @@ import ConceptGraph.Output.Logging.Logger;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 
 /**
  * Created by danco on 29/11/2015.
@@ -14,9 +15,31 @@ public class FileOutputAssistant {
     public static final String OUTPUT_PATH = "output";
     private static final String GRAPH_OUTPUT_SUBPATH = "graph";
     private Logger logger;
+    private HashMap<String, String> asciiMap;
 
     public FileOutputAssistant() {
         logger = new DefaultLogger();
+        asciiMap = new HashMap<>();
+        asciiMap.put(" ", "#0x20");
+        asciiMap.put("#0x20", " ");
+        asciiMap.put("\"", "#0x22");
+        asciiMap.put("#0x22", "\"");
+        asciiMap.put("*", "#0x2A");
+        asciiMap.put("#0x2A", "*");
+        asciiMap.put("/", "#0x2F");
+        asciiMap.put("#0x2F", "/");
+        asciiMap.put(":", "#0x3A");
+        asciiMap.put("#0x3A", ":");
+        asciiMap.put("<", "#0x3C");
+        asciiMap.put("#0x3C", "<");
+        asciiMap.put(">", "#0x3E");
+        asciiMap.put("#0x3E", ">");
+        asciiMap.put("?", "#0x3F");
+        asciiMap.put("#0x3F", "?");
+        asciiMap.put("\\", "#0x5C");
+        asciiMap.put("#0x5C", "\\");
+        asciiMap.put("|", "#0x7C");
+        asciiMap.put("#0x7C", "|");
     }
 
     public FileWriter getWriter(String fileName) throws IOException {
@@ -42,9 +65,16 @@ public class FileOutputAssistant {
     }
 
     public String escape(String input) {
-        input = input.replace(" ", "_");
-        input = input.replace("?", "#0x63");
-        input = input.replace("*", "#0x42");
-        return input.replace("/", "#0x47");
+        input = input.replace(" ", asciiMap.get(" "));
+        input = input.replace("?", asciiMap.get("?"));
+        input = input.replace("*", asciiMap.get("*"));
+        input = input.replace("\"",asciiMap.get("\""));
+        input = input.replace("\\",asciiMap.get("\\"));
+        input = input.replace(":", asciiMap.get(":"));
+        input = input.replace("|", asciiMap.get("|"));
+        input = input.replace(">", asciiMap.get(">"));
+        input = input.replace("<", asciiMap.get("<"));
+        return input.replace("/", asciiMap.get("/"));
     }
+
 }
