@@ -19,6 +19,8 @@ public class XmlScraper implements Scraper {
     private GraphStore graphStore;
     private WikiDumpReader reader;
     private int count;
+    private int DEC_THIRD_2015_AT_6PM_GMT = 1449165600;
+    private int END_TIME = DEC_THIRD_2015_AT_6PM_GMT;
 
     public XmlScraper(Processor processor, Logger logger, GraphStore graphStore, WikiDumpReader wikiReader, WikiPageXmlParser xmlParser) throws FileNotFoundException {
         this.processor = processor;
@@ -34,7 +36,7 @@ public class XmlScraper implements Scraper {
         count = 0;
 
         while (pageXml != null) {
-            if(shouldBreak){
+            if(shouldBreak || getUnixEpoch() > END_TIME){
                 break;
             }
 
@@ -50,7 +52,14 @@ public class XmlScraper implements Scraper {
         processor.writeOutput();
     }
 
+    private int getUnixEpoch() {
+        return (int) (System.currentTimeMillis() / 1000L);
+    }
+
     private void process(WikiPage page) throws IOException {
+
+        logger.log("Processing " + page.title);
+
         Timer timer = Timer.startNew();
 
         Node node = Storage.getNodeIfExists(page.title);
@@ -60,12 +69,20 @@ public class XmlScraper implements Scraper {
             return;
         }
 
+        logger.log("node retrieved");
+
         Storage.Nodes.put(page.title, node);
 
-        String[] words = getWords(page.getStrippedText());
+        String[] words = getWordsFrom(page.getStrippedText());
+
+        logger.log("Found " + (words == null ? 0  : words.length) + " words.");
 
         processor.getNodesFromWords(words, node);
+
+        logger.log(node.connectedConcepts.size() + " connected concepts found.");
+
         graphStore.writeNodeToFile(node);
+
         timer.stop();
 
         logger.log((++ count) + " processed so far...");
@@ -73,7 +90,7 @@ public class XmlScraper implements Scraper {
         logger.logTimeElapsed("Document processed" , timer, true);
     }
 
-    private String[] getWords(String mainBody) {
+    private String[] getWordsFrom(String mainBody) {
         String[] words = mainBody.split("[\\W|_]");
 
         Object[] filtered = Stream.of(words)

@@ -2,6 +2,7 @@ package ConceptGraph;
 
         import ConceptGraph.DataStructures.WikiPage;
         import ConceptGraph.Input.WikiPageXmlParser;
+        import ConceptGraph.Output.FileOutputAssistant;
         import ConceptGraph.Output.Logging.DefaultLogger;
         import ConceptGraph.Output.Logging.Logger;
         import junit.framework.Test;
@@ -18,6 +19,7 @@ package ConceptGraph;
 public class WikiPageXmlParserTest extends TestCase {
 
     private Logger logger = new DefaultLogger();
+    private FileOutputAssistant output = new FileOutputAssistant();
 
     public WikiPageXmlParserTest(String testName )
     {
@@ -30,32 +32,32 @@ public class WikiPageXmlParserTest extends TestCase {
     }
 
     public void test_givenEmptyString_ReturnsNull() throws IOException, SAXException, ParserConfigurationException {
-        WikiPageXmlParser parser = new WikiPageXmlParser(logger);
+        WikiPageXmlParser parser = new WikiPageXmlParser(logger, output);
         WikiPage result = parser.parse("");
 
         assertEquals(result, null);
     }
 
     public void test_givenSample_ReturnsWikiPage() throws IOException, SAXException, ParserConfigurationException {
-        WikiPageXmlParser parser = new WikiPageXmlParser(logger);
+        WikiPageXmlParser parser = new WikiPageXmlParser(logger, output);
         WikiPage result = parser.parse(samplePage);
         assertNotNull(result);
     }
 
     public void test_givenSample_SetsTitleToAndronikosIIPalaiologos() throws IOException, SAXException, ParserConfigurationException {
-        WikiPageXmlParser parser = new WikiPageXmlParser(logger);
+        WikiPageXmlParser parser = new WikiPageXmlParser(logger, output);
         WikiPage result = parser.parse(samplePage);
         assertEquals(result.title, "andronikos ii palaiologos");
     }
 
     public void test_givenSample_SetsRawTextToSampleText() throws IOException, SAXException, ParserConfigurationException {
-        WikiPageXmlParser parser = new WikiPageXmlParser(logger);
+        WikiPageXmlParser parser = new WikiPageXmlParser(logger, output);
         WikiPage result = parser.parse(samplePage);
         assertEquals(result.rawText, StringEscapeUtils.unescapeHtml4(sampleText)); //.unescapeHtml(sampleText));
     }
 
     public void test_givenSample_StripsTagsFromText() throws IOException, SAXException, ParserConfigurationException {
-        WikiPageXmlParser parser = new WikiPageXmlParser(logger);
+        WikiPageXmlParser parser = new WikiPageXmlParser(logger, output);
         WikiPage result = parser.parse(samplePage);
         assertFalse(result.getStrippedText().contains("<")); //.unescapeHtml(sampleText));
     }

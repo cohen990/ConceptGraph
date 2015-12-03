@@ -50,7 +50,7 @@ public class App {
         GraphStore graphStore = new IndividualFilesGraphStore(fileOutput, logger);
         Reader baseReader = new FileReader("C:\\wikidump\\enwiki-20150205-pages-articles-multistream.xml");
         WikiDumpReader wikiReader = new WikiDumpReader(baseReader);
-        WikiPageXmlParser xmlParser = new WikiPageXmlParser(logger);
+        WikiPageXmlParser xmlParser = new WikiPageXmlParser(logger, fileOutput);
         return new XmlScraper(processor, logger, graphStore, wikiReader, xmlParser);
     }
 }
