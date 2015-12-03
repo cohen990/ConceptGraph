@@ -25,7 +25,8 @@ public class IndividualFilesGraphStore extends GraphStore {
                 writer = fileOutputAssistant.getWriterForGraph(title, false);
             }
 
-            logger.log("Writing to output/graph/" + fileOutputAssistant.escape(title) + ".grp");
+            String fileName = fileOutputAssistant.clipFileName(fileOutputAssistant.escape(title), ".grp");
+            logger.log("Writing to output/graph/" + fileName);
         } catch (IOException e) {
             logger.logException(e);
         } finally {
@@ -36,6 +37,10 @@ public class IndividualFilesGraphStore extends GraphStore {
     @Override
     public void writeNodeToFile(Node node) {
         Writer file = getWriter(node.name);
+        if(file == null){
+            logger.logWarning("Unable to get writer for " + node.toStringWithoutChildren());
+            return;
+        }
         try {
             file.write(node.toString() + System.getProperty("line.separator") + System.getProperty("line.separator"));
         } catch (IOException e) {
