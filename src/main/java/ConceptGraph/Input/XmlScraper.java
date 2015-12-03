@@ -42,7 +42,8 @@ public class XmlScraper implements Scraper {
 
             WikiPage page = parser.parse(pageXml);
             if(page == null){
-                return;
+                logger.logWarning("Null Page found - skipping.");
+                continue;
             }
 
             logger.logDate();
