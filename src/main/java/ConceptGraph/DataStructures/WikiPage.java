@@ -12,7 +12,7 @@ public class WikiPage {
     private String strippedText;
     public String getStrippedText(){
         if(rawText.isEmpty()){
-            return "";
+            return (strippedText = "");
         }
         if(strippedText != null){
             return strippedText;
@@ -23,6 +23,9 @@ public class WikiPage {
     }
 
     public WikiPage(String title, String rawText){
+        if(rawText == null){
+            rawText = "";
+        }
         this.title = title;
         this.rawText = rawText;
     }
