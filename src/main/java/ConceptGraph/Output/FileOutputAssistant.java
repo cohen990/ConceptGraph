@@ -2,6 +2,7 @@ package ConceptGraph.Output;
 
 import ConceptGraph.Output.Logging.DefaultLogger;
 import ConceptGraph.Output.Logging.Logger;
+import ConceptGraph.Utilities.StringHasher;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -16,6 +17,7 @@ public class FileOutputAssistant {
     private static final String GRAPH_OUTPUT_SUBPATH = "graph";
     private Logger logger;
     private HashMap<String, String> asciiMap;
+    private int WINDOWS_MAX_FILENAME_LENGTH = 255;
 
     public FileOutputAssistant() {
         logger = new DefaultLogger();
@@ -50,7 +52,27 @@ public class FileOutputAssistant {
     public FileWriter getWriterForGraph(String fileName, boolean append) throws IOException {
         makeDirectoryIfNotExists(OUTPUT_PATH);
         makeDirectoryIfNotExists(OUTPUT_PATH + "/" + GRAPH_OUTPUT_SUBPATH);
-        return new FileWriter(OUTPUT_PATH + "/" + GRAPH_OUTPUT_SUBPATH + "/" + escape(fileName) + ".grp", append);
+        return new FileWriter(OUTPUT_PATH + "/" + GRAPH_OUTPUT_SUBPATH + "/" + clipFileName(escape(fileName), ".grp"), append);
+    }
+
+    public String clipFileName(String fileName, String extension) {
+        if(isLongerThanMaxFileNameLength(fileName + extension)){
+            fileName = replaceEndOfFileNameWithHash(fileName, extension);
+        }
+
+        return fileName + extension;
+    }
+
+    private boolean isLongerThanMaxFileNameLength(String fileName){
+         return (fileName.length() - WINDOWS_MAX_FILENAME_LENGTH > 0);
+    }
+
+    private String replaceEndOfFileNameWithHash(String fileName, String extension) {
+        String hash = Integer.toString(StringHasher.simpleHash(fileName + extension));
+        int positionToCutTo = WINDOWS_MAX_FILENAME_LENGTH - extension.length() - hash.length();
+        fileName = fileName.substring(0, positionToCutTo);
+        fileName += hash;
+        return fileName;
     }
 
     private void makeDirectoryIfNotExists(String directory) {
@@ -74,7 +96,8 @@ public class FileOutputAssistant {
         input = input.replace("|", asciiMap.get("|"));
         input = input.replace(">", asciiMap.get(">"));
         input = input.replace("<", asciiMap.get("<"));
-        return input.replace("/", asciiMap.get("/"));
+        input = input.replace("/", asciiMap.get("/"));
+        return input;
     }
 
 }
