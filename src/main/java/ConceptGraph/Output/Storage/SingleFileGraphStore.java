@@ -1,45 +1,55 @@
 package ConceptGraph.Output.Storage;
 
 import ConceptGraph.DataStructures.Node;
-import ConceptGraph.DataStructures.Storage;
 import ConceptGraph.Output.FileOutputAssistant;
 import ConceptGraph.Output.Logging.Logger;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 
 public class SingleFileGraphStore extends GraphStore {
     private final FileOutputAssistant fileOutputAssistant;
-    private final FileWriter writer;
+    private final FileOutputStream graph;
+    private final FileWriter index;
+    private long head = 0;
+    private String NEW_LINE = System.getProperty("line.separator");
 
     public SingleFileGraphStore(FileOutputAssistant fileOutputAssistant, Logger logger) throws IOException {
         super(logger);
         this.fileOutputAssistant = fileOutputAssistant;
-        this.writer = fileOutputAssistant.getWriter("graph.grp");
-    }
-
-    private Writer getWriter(String title) {
-        return writer;
+        this.graph = fileOutputAssistant.getFileOutputStream("graph.grp");
+        this.index = fileOutputAssistant.getWriter("index.idx");
     }
 
     @Override
     public void writeNodeToFile(Node node) {
-        Writer file = getWriter(node.name);
+        String stringToWrite = node.toString() + NEW_LINE + NEW_LINE;
+        byte[] bytesToWrite = stringToWrite.getBytes();
         try {
-            file.write(node.toString() + System.getProperty("line.separator") + System.getProperty("line.separator"));
+            index.write(node.name + ":" + head + NEW_LINE);
+            graph.write(bytesToWrite);
+            head += bytesToWrite.length;
         } catch (IOException e) {
             logger.logException(e);
         } finally {
-            tryToClose(file);
+            tryToFlush(graph);
+            tryToFlush(index);
         }
         node.written = true;
         node.dropConnections();
     }
 
-    private void tryToClose(Writer nodes) {
+    @Override
+    public void finalize() {
         try {
-            nodes.close();
+            graph.close();
+        } catch (IOException e) {
+            logger.logException(e);
+        }
+    }
+
+    private void tryToFlush(Flushable target) {
+        try {
+            target.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

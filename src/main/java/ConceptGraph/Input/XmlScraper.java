@@ -51,6 +51,8 @@ public class XmlScraper implements Scraper {
             pageXml = reader.getPage();
         }
         processor.writeOutput();
+
+        graphStore.finalize();
     }
 
     private int getUnixEpoch() {

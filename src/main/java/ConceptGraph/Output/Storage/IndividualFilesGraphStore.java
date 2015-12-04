@@ -52,6 +52,11 @@ public class IndividualFilesGraphStore extends GraphStore {
         node.dropConnections();
     }
 
+    @Override
+    public void finalize() {
+        // no op
+    }
+
     private void tryToClose(Writer nodes) {
         try {
             nodes.close();
