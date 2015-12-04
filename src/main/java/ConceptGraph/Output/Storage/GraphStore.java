@@ -13,6 +13,8 @@ public abstract class GraphStore {
 
     public abstract void writeNodeToFile(Node node);
 
+    public abstract void finalize();
+
     protected GraphStore(Logger logger){
         this.logger = logger;
     }

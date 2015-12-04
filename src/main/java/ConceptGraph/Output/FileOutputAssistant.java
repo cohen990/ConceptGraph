@@ -5,6 +5,7 @@ import ConceptGraph.Output.Logging.Logger;
 import ConceptGraph.Utilities.StringHasher;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -14,13 +15,17 @@ import java.util.HashMap;
  */
 public class FileOutputAssistant {
     public static final String OUTPUT_PATH = "output";
-    private static final String GRAPH_OUTPUT_SUBPATH = "graph";
+    private static final String GRAPH_OUTPUT_SUB_PATH = "graph";
     private Logger logger;
     private HashMap<String, String> asciiMap;
     private int WINDOWS_MAX_FILENAME_LENGTH = 255;
 
     public FileOutputAssistant() {
         logger = new DefaultLogger();
+        getAsciiMap();
+    }
+
+    private void getAsciiMap() {
         asciiMap = new HashMap<>();
         asciiMap.put(" ", "#0x20");
         asciiMap.put("#0x20", " ");
@@ -49,10 +54,16 @@ public class FileOutputAssistant {
         return new FileWriter(OUTPUT_PATH + "/" + escape(fileName));
     }
 
+
+    public FileOutputStream getFileOutputStream(String fileName) throws IOException {
+        makeDirectoryIfNotExists(OUTPUT_PATH);
+        return new FileOutputStream(OUTPUT_PATH + "/" + escape(fileName));
+    }
+
     public FileWriter getWriterForGraph(String fileName, boolean append) throws IOException {
         makeDirectoryIfNotExists(OUTPUT_PATH);
-        makeDirectoryIfNotExists(OUTPUT_PATH + "/" + GRAPH_OUTPUT_SUBPATH);
-        return new FileWriter(OUTPUT_PATH + "/" + GRAPH_OUTPUT_SUBPATH + "/" + clipFileName(escape(fileName), ".grp"), append);
+        makeDirectoryIfNotExists(OUTPUT_PATH + "/" + GRAPH_OUTPUT_SUB_PATH);
+        return new FileWriter(OUTPUT_PATH + "/" + GRAPH_OUTPUT_SUB_PATH + "/" + clipFileName(escape(fileName), ".grp"), append);
     }
 
     public String clipFileName(String fileName, String extension) {
@@ -87,17 +98,21 @@ public class FileOutputAssistant {
     }
 
     public String escape(String input) {
-        input = input.replace(" ", asciiMap.get(" "));
-        input = input.replace("?", asciiMap.get("?"));
-        input = input.replace("*", asciiMap.get("*"));
-        input = input.replace("\"",asciiMap.get("\""));
-        input = input.replace("\\",asciiMap.get("\\"));
-        input = input.replace(":", asciiMap.get(":"));
-        input = input.replace("|", asciiMap.get("|"));
-        input = input.replace(">", asciiMap.get(">"));
-        input = input.replace("<", asciiMap.get("<"));
-        input = input.replace("/", asciiMap.get("/"));
+        input = input.replace(" ", getAscii(" "));
+        input = input.replace("?", getAscii("?"));
+        input = input.replace("*", getAscii("*"));
+        input = input.replace("\"", getAscii("\""));
+        input = input.replace("\\", getAscii("\\"));
+        input = input.replace(":", getAscii(":"));
+        input = input.replace("|", getAscii("|"));
+        input = input.replace(">", getAscii(">"));
+        input = input.replace("<", getAscii("<"));
+        input = input.replace("/", getAscii("/"));
         return input;
+    }
+
+    private String getAscii(String key) {
+        return asciiMap.get(key);
     }
 
 }
