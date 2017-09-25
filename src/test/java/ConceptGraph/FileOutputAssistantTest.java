@@ -1,39 +1,14 @@
 package ConceptGraph;
 
 import ConceptGraph.Output.FileOutputAssistant;
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
+import org.junit.Test;
 
 import java.io.IOException;
 
-/**
- * Unit test for simple App.
- */
-public class FileOutputAssistantTest
-    extends TestCase
-{
-    /**
-     * Create the test case
-     *
-     * @param testName name of the test case
-     */
-    public FileOutputAssistantTest(String testName )
-    {
-        super( testName );
-    }
+import static org.junit.Assert.assertNull;
 
-    /**
-     * @return the suite of tests being tested
-     */
-    public static Test suite()
-    {
-        return new TestSuite( FileOutputAssistantTest.class );
-    }
-
-    /**
-     * Rigourous Test :-)
-     */
+public class FileOutputAssistantTest {
+    @Test
     public void getWriterForGraph_GivenEnormousFileName_DoesntThrow()
     {
         FileOutputAssistant output = new FileOutputAssistant();
