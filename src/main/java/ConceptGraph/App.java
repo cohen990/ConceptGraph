@@ -8,7 +8,6 @@ import ConceptGraph.Output.FileOutputAssistant;
 import ConceptGraph.Output.Logging.FileLogger;
 import ConceptGraph.Output.Logging.Logger;
 import ConceptGraph.Output.Storage.GraphStore;
-import ConceptGraph.Output.Storage.IndividualFilesGraphStore;
 import ConceptGraph.Output.Storage.SingleFileGraphStore;
 
 import java.io.FileNotFoundException;
@@ -17,37 +16,78 @@ import java.io.IOException;
 import java.io.Reader;
 
 public class App {
+    private final FileOutputAssistant fileOutput;
+    private final Logger logger;
+    private Analyser analyser;
+    private Processor processor;
+    private Scraper scraper;
+
+    public App() {
+        fileOutput = getFileOutput();
+        logger = FileLogger.Create(fileOutput);
+    }
+
+    public App(Scraper scraper, Analyser analyser) {
+        this();
+        this.scraper = scraper;
+        this.analyser = analyser;
+    }
+
     public static void main(String[] args) throws IOException {
-        boolean analyse = false;
-//        analyse = true;
-        FileOutputAssistant fileOutput = new FileOutputAssistant();
-        Logger logger = FileLogger.Create(fileOutput);
+        boolean shouldAnalyse = false;
+        App app = new App();
+        app.run(shouldAnalyse);
+    }
+
+    public void run(boolean analyse) throws IOException {
         if(analyse){
-            analyse(logger);
+            analyse();
         }
         else{
-            scrape(fileOutput, logger);
+            scrape();
         }
     }
 
-    private static void analyse(Logger logger) throws FileNotFoundException {
-        Analyser analyser = new Analyser(logger);
+
+    protected void analyse() throws FileNotFoundException {
+        analyser = getAnalyser(logger);
         analyser.getTopConnectedConcepts();
     }
 
-    private static void scrape(FileOutputAssistant fileOutput, Logger logger) throws IOException {
-        Processor processor = new Processor(fileOutput);
-        Scraper scraper = getScraper(fileOutput, logger, processor);
+    protected void scrape() throws IOException {
+        processor = getProcessor(fileOutput);
+        scraper = getScraper(fileOutput, logger, processor);
         try {
             scraper.scrape();
         }
         catch(Exception e){
-            logger.logException(e);
-            processor.writeOutput();
+            handleFailedScrape(logger, processor, e);
         }
     }
 
-    private static Scraper getScraper(FileOutputAssistant fileOutput, Logger logger, Processor processor) throws IOException {
+    private FileOutputAssistant getFileOutput() {
+        return new FileOutputAssistant();
+    }
+
+    protected Analyser getAnalyser(Logger logger) {
+        return analyser == null
+                ? new Analyser(logger)
+                : analyser;
+    }
+
+    private Processor getProcessor(FileOutputAssistant fileOutput) {
+        return new Processor(fileOutput);
+    }
+
+    private void handleFailedScrape(Logger logger, Processor processor, Exception e) throws IOException {
+        logger.logException(e);
+        processor.writeOutput();
+    }
+
+    protected Scraper getScraper(FileOutputAssistant fileOutput, Logger logger, Processor processor) throws IOException {
+        if(scraper != null){
+            return scraper;
+        }
         GraphStore graphStore = new SingleFileGraphStore(fileOutput, logger);
         Reader baseReader = new FileReader("C:\\wikidump\\enwiki-20150205-pages-articles-multistream.xml");
         WikiDumpReader wikiReader = new WikiDumpReader(baseReader);
