@@ -5,32 +5,21 @@ package ConceptGraph;
         import ConceptGraph.Output.FileOutputAssistant;
         import ConceptGraph.Output.Logging.DefaultLogger;
         import ConceptGraph.Output.Logging.Logger;
-        import junit.framework.Test;
-        import junit.framework.TestCase;
-        import junit.framework.TestSuite;
         import org.apache.commons.lang3.StringEscapeUtils;
+        import org.junit.Test;
         import org.xml.sax.SAXException;
 
         import javax.xml.parsers.ParserConfigurationException;
         import java.io.IOException;
-/**
- * Created by Dan on 18/11/2015.
- */
-public class WikiPageXmlParserTest extends TestCase {
+
+        import static org.junit.Assert.*;
+
+public class WikiPageXmlParserTest{
 
     private Logger logger = new DefaultLogger();
     private FileOutputAssistant output = new FileOutputAssistant();
 
-    public WikiPageXmlParserTest(String testName )
-    {
-        super( testName );
-    }
-
-    public static Test suite()
-    {
-        return new TestSuite( SizedMaxArrayTest.class );
-    }
-
+    @Test
     public void test_givenEmptyString_ReturnsNull() throws IOException, SAXException, ParserConfigurationException {
         WikiPageXmlParser parser = new WikiPageXmlParser(logger, output);
         WikiPage result = parser.parse("");
@@ -38,24 +27,28 @@ public class WikiPageXmlParserTest extends TestCase {
         assertEquals(result, null);
     }
 
+    @Test
     public void test_givenSample_ReturnsWikiPage() throws IOException, SAXException, ParserConfigurationException {
         WikiPageXmlParser parser = new WikiPageXmlParser(logger, output);
         WikiPage result = parser.parse(samplePage);
         assertNotNull(result);
     }
 
+    @Test
     public void test_givenSample_SetsTitleToAndronikosIIPalaiologos() throws IOException, SAXException, ParserConfigurationException {
         WikiPageXmlParser parser = new WikiPageXmlParser(logger, output);
         WikiPage result = parser.parse(samplePage);
         assertEquals(result.title, "andronikos ii palaiologos");
     }
 
+    @Test
     public void test_givenSample_SetsRawTextToSampleText() throws IOException, SAXException, ParserConfigurationException {
         WikiPageXmlParser parser = new WikiPageXmlParser(logger, output);
         WikiPage result = parser.parse(samplePage);
         assertEquals(result.rawText, StringEscapeUtils.unescapeHtml4(sampleText)); //.unescapeHtml(sampleText));
     }
 
+    @Test
     public void test_givenSample_StripsTagsFromText() throws IOException, SAXException, ParserConfigurationException {
         WikiPageXmlParser parser = new WikiPageXmlParser(logger, output);
         WikiPage result = parser.parse(samplePage);
