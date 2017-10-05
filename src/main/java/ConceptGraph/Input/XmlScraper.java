@@ -19,8 +19,8 @@ public class XmlScraper implements Scraper {
     private GraphStore graphStore;
     private WikiDumpReader reader;
     private int count;
-    private int DEC_THIRD_2015_AT_6PM_GMT = 1449165600;
-    private int END_TIME = DEC_THIRD_2015_AT_6PM_GMT;
+    private int NOV_27_AT_4_PM = 1506528000;
+    private int END_TIME = NOV_27_AT_4_PM;
 
     public XmlScraper(Processor processor, Logger logger, GraphStore graphStore, WikiDumpReader wikiReader, WikiPageXmlParser xmlParser) throws FileNotFoundException {
         this.processor = processor;
@@ -84,7 +84,7 @@ public class XmlScraper implements Scraper {
 
         logger.log(node.connectedConcepts.size() + " connected concepts found.");
 
-        graphStore.writeNodeToFile(node);
+        graphStore.write(node);
 
         timer.stop();
 
