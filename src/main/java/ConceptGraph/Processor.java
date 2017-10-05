@@ -10,6 +10,8 @@ import org.jsoup.select.Elements;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.HashMap;
+import java.util.List;
 
 public class Processor {
 
@@ -41,10 +43,10 @@ public class Processor {
 
     public void addOrUpdateFrequency(String word) {
         if (!word.isEmpty()) {
-            if (!Storage.Frequency.containsKey(word)) {
-                Storage.Frequency.put(word, 0);
+            if (!getFrequency().containsKey(word)) {
+                getFrequency().put(word, 0);
             }
-            Storage.Frequency.merge(word, 1, (oldValue, one) -> oldValue + one);
+            getFrequency().merge(word, 1, (oldValue, one) -> oldValue + one);
         }
     }
 
@@ -89,23 +91,23 @@ public class Processor {
     public void writeOutput() throws IOException {
         FileWriter freq = fileOutputAssistant.getWriter("freq_output.txt");
 
-        for (String key : Storage.Frequency.keySet()) {
-            freq.write(key + "=" + Storage.Frequency.get(key) + System.getProperty("line.separator"));
+        for (String key : getFrequency().keySet()) {
+            freq.write(key + "=" + getFrequency().get(key) + System.getProperty("line.separator"));
         }
 
         freq.close();
 
-        Storage.Frequency.clear();
+        getFrequency().clear();
 
         FileWriter queried = fileOutputAssistant.getWriter("queried.txt");
 
-        for (Uri uri : Storage.QueriedUris) {
+        for (Uri uri : getQueriedUris()) {
             queried.write(uri.toString() + System.getProperty("line.separator"));
         }
 
         queried.close();
 
-        Storage.QueriedUris.clear();
+        getQueriedUris().clear();
     }
 
     private Node getOrAddFromStorage(String word) {
@@ -123,8 +125,16 @@ public class Processor {
         return node;
     }
 
-    private Node getNodeFromStorage(String word) {
+    protected List<Uri> getQueriedUris() {
+        return Storage.QueriedUris;
+    }
+
+    protected Node getNodeFromStorage(String word) {
         return Storage.Nodes.get(word);
+    }
+
+    protected HashMap<String, Integer> getFrequency() {
+        return Storage.Frequency;
     }
 }
 
