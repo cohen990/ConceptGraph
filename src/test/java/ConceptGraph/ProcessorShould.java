@@ -2,8 +2,12 @@ package ConceptGraph;
 
 import ConceptGraph.DataStructures.Node;
 import ConceptGraph.Output.FileOutput;
+import com.sun.jndi.toolkit.url.Uri;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.HashMap;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -13,11 +17,13 @@ public class ProcessorShould {
     private FileOutput fileOutput;
     private Processor processor;
     private Node rootNode;
+    private TestProcessor testProcessor;
 
     @Before
     public void before(){
         fileOutput = mock(FileOutput.class);
         processor = new Processor(fileOutput);
+        testProcessor = new TestProcessor(fileOutput);
         rootNode = new Node("root-node");
     }
 
@@ -100,6 +106,27 @@ public class ProcessorShould {
             else{
                 assertEquals(1, (int) result.connectedConcepts.get(key));
             }
+        }
+    }
+
+    private class TestProcessor extends Processor{
+        public TestProcessor(FileOutput fileOutputAssistant) {
+            super(fileOutputAssistant);
+        }
+
+        @Override
+        protected List<Uri> getQueriedUris() {
+            return super.getQueriedUris();
+        }
+
+        @Override
+        protected Node getNodeFromStorage(String word) {
+            return super.getNodeFromStorage(word);
+        }
+
+        @Override
+        protected HashMap<String, Integer> getFrequency() {
+            return super.getFrequency();
         }
     }
 }
