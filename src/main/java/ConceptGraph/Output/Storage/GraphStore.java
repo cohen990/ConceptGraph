@@ -11,7 +11,7 @@ import java.io.File;
 public abstract class GraphStore {
     protected final Logger logger;
 
-    public abstract void writeNodeToFile(Node node);
+    public abstract void write(Node node);
 
     public abstract void finalize();
 

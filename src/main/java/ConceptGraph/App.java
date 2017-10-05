@@ -1,14 +1,9 @@
 package ConceptGraph;
 
-import ConceptGraph.Input.Scraper;
-import ConceptGraph.Input.WikiDumpReader;
-import ConceptGraph.Input.WikiPageXmlParser;
-import ConceptGraph.Input.XmlScraper;
-import ConceptGraph.Output.FileOutputAssistant;
-import ConceptGraph.Output.Logging.FileLogger;
-import ConceptGraph.Output.Logging.Logger;
-import ConceptGraph.Output.Storage.GraphStore;
-import ConceptGraph.Output.Storage.SingleFileGraphStore;
+import ConceptGraph.Input.*;
+import ConceptGraph.Output.*;
+import ConceptGraph.Output.Logging.*;
+import ConceptGraph.Output.Storage.*;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -47,7 +42,6 @@ public class App {
             scrape();
         }
     }
-
 
     protected void analyse() throws FileNotFoundException {
         analyser = getAnalyser(logger);
@@ -89,7 +83,7 @@ public class App {
             return scraper;
         }
         GraphStore graphStore = new SingleFileGraphStore(fileOutput, logger);
-        Reader baseReader = new FileReader("C:\\wikidump\\enwiki-20150205-pages-articles-multistream.xml");
+        Reader baseReader = new FileReader("/Users/dancohen/Documents/enwiki-20170820-pages-articles.xml");
         WikiDumpReader wikiReader = new WikiDumpReader(baseReader);
         WikiPageXmlParser xmlParser = new WikiPageXmlParser(logger, fileOutput);
         return new XmlScraper(processor, logger, graphStore, wikiReader, xmlParser);

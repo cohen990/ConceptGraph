@@ -1,8 +1,7 @@
 package ConceptGraph;
 
-import ConceptGraph.DataStructures.Node;
-import ConceptGraph.DataStructures.Storage;
-import ConceptGraph.Output.FileOutputAssistant;
+import ConceptGraph.DataStructures.*;
+import ConceptGraph.Output.*;
 import com.sun.jndi.toolkit.url.Uri;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,20 +13,20 @@ import java.net.MalformedURLException;
 
 public class Processor {
 
-    private final FileOutputAssistant fileOutputAssistant;
+    private final FileOutput fileOutputAssistant;
 
-    public Processor(FileOutputAssistant fileOutputAssistant){
+    public Processor(FileOutput fileOutputAssistant){
         this.fileOutputAssistant = fileOutputAssistant;
+    }
+
+    public Node getNodesFromWordsSideEffectFree(String[] words, Node root){
+       getNodesFromWords(words, root);
+       return root;
     }
 
     public void getNodesFromWords(String[] words, Node root) {
         for (String word : words) {
-            Node node = Storage.Nodes.get(word);
-
-            if (node == null) {
-                node = new Node(word);
-                Storage.Nodes.put(word, node);
-            }
+            Node node = getOrAddFromStorage(word);
 
             int strength = 1;
             if (root.connectedConcepts.containsKey(node)) {
@@ -40,6 +39,16 @@ public class Processor {
         }
     }
 
+    public void addOrUpdateFrequency(String word) {
+        if (!word.isEmpty()) {
+            if (!Storage.Frequency.containsKey(word)) {
+                Storage.Frequency.put(word, 0);
+            }
+            Storage.Frequency.merge(word, 1, (oldValue, one) -> oldValue + one);
+        }
+    }
+
+    // This function should be in an entirely different class
     public void getUrisFromDocument(Document doc) {
         Elements links = doc.select("#mw-content-text a[href]");
 
@@ -49,6 +58,7 @@ public class Processor {
         }
     }
 
+    // This function should be in an entirely different class
     public void addUriToLinks(String href) {
         if (href.startsWith("/") && !href.contains("File:")) {
             if (href.startsWith("//")) {
@@ -75,15 +85,7 @@ public class Processor {
         }
     }
 
-    public void addOrUpdateFrequency(String word) {
-        if (!word.isEmpty()) {
-            if (!Storage.Frequency.containsKey(word)) {
-                Storage.Frequency.put(word, 0);
-            }
-            Storage.Frequency.merge(word, 1, (oldValue, one) -> oldValue + one);
-        }
-    }
-
+    // This function should be in an entirely different class
     public void writeOutput() throws IOException {
         FileWriter freq = fileOutputAssistant.getWriter("freq_output.txt");
 
@@ -104,6 +106,25 @@ public class Processor {
         queried.close();
 
         Storage.QueriedUris.clear();
+    }
+
+    private Node getOrAddFromStorage(String word) {
+        Node node = getNodeFromStorage(word);
+
+        if (node == null) {
+            node = addNodeToStorage(word);
+        }
+        return node;
+    }
+
+    private Node addNodeToStorage(String word) {
+        Node node = new Node(word);
+        Storage.Nodes.put(word, node);
+        return node;
+    }
+
+    private Node getNodeFromStorage(String word) {
+        return Storage.Nodes.get(word);
     }
 }
 

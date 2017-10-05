@@ -13,7 +13,7 @@ import java.util.HashMap;
 /**
  * Created by danco on 29/11/2015.
  */
-public class FileOutputAssistant {
+public class FileOutputAssistant implements FileOutput {
     public static final String OUTPUT_PATH = "output";
     private static final String GRAPH_OUTPUT_SUB_PATH = "graph";
     private Logger logger;
@@ -49,6 +49,7 @@ public class FileOutputAssistant {
         asciiMap.put("#0x7C", "|");
     }
 
+    @Override
     public FileWriter getWriter(String fileName) throws IOException {
         makeDirectoryIfNotExists(OUTPUT_PATH);
         return new FileWriter(OUTPUT_PATH + "/" + escape(fileName));

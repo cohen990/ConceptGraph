@@ -35,7 +35,7 @@ public class IndividualFilesGraphStore extends GraphStore {
     }
 
     @Override
-    public void writeNodeToFile(Node node) {
+    public void write(Node node) {
         Writer file = getWriter(node.name);
         if(file == null){
             logger.logWarning("Unable to get writer for " + node.toStringWithoutChildren());

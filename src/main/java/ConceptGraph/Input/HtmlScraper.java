@@ -63,7 +63,7 @@ public class HtmlScraper implements Scraper {
 
         processor.getUrisFromDocument(doc);
         processor.getNodesFromWords(words, node);
-        graphStore.writeNodeToFile(node);
+        graphStore.write(node);
         timer.stop();
 
         logger.log(Storage.QueriedUris.size() + " queried so far...");

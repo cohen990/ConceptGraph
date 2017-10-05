@@ -1,27 +1,25 @@
 package ConceptGraph.Output.Storage;
 
 import ConceptGraph.DataStructures.Node;
-import ConceptGraph.Output.FileOutputAssistant;
+import ConceptGraph.Output.FileOutput;
 import ConceptGraph.Output.Logging.Logger;
 
 import java.io.*;
 
 public class SingleFileGraphStore extends GraphStore {
-    private final FileOutputAssistant fileOutputAssistant;
     private final FileOutputStream graph;
     private final FileWriter index;
     private long head = 0;
     private String NEW_LINE = System.getProperty("line.separator");
 
-    public SingleFileGraphStore(FileOutputAssistant fileOutputAssistant, Logger logger) throws IOException {
+    public SingleFileGraphStore(FileOutput fileOutputAssistant, Logger logger) throws IOException {
         super(logger);
-        this.fileOutputAssistant = fileOutputAssistant;
         this.graph = fileOutputAssistant.getFileOutputStream("graph.grp");
         this.index = fileOutputAssistant.getWriter("index.idx");
     }
 
     @Override
-    public void writeNodeToFile(Node node) {
+    public void write(Node node) {
         String stringToWrite = node.toString() + NEW_LINE + NEW_LINE;
         byte[] bytesToWrite = stringToWrite.getBytes();
         try {
